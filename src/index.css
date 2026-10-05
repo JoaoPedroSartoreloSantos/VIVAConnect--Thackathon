@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+:root {
+  --font-scale: 1;
+}
+
+html {
+  font-size: calc(16px * var(--font-scale, 1));
+  scroll-behavior: smooth;
+  scroll-padding-top: 4.5rem;
+}
+
+/* ========================================================
+   1. TEMA CLARO (WCAG AA / AAA - Padrão Saúde)
+   ======================================================== */
+body.theme-normal {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+body.theme-normal .text-muted-accessible {
+  color: #334155 !important;
+}
+
+body.theme-normal input,
+body.theme-normal textarea,
+body.theme-normal select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #64748b !important;
+}
+
+body.theme-normal input::placeholder,
+body.theme-normal textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* ========================================================
+   2. TEMA ALTO CONTRASTE (Fundo Preto, Bordas Amarelas, Letras Pretas com Borda Amarela)
+   ======================================================== */
+html:has(body.theme-contrast),
+body.theme-contrast {
+  background-color: #000000 !important;
+  color: #000000 !important;
+}
+
+/* Todos os containers, seções, cabeçalho, navegação e blocos com fundo preto */
+body.theme-contrast #root,
+body.theme-contrast main,
+body.theme-contrast header,
+body.theme-contrast nav,
+body.theme-contrast footer,
+body.theme-contrast section,
+body.theme-contrast article,
+body.theme-contrast aside,
+body.theme-contrast form,
+body.theme-contrast div:not(.modal-backdrop),
+body.theme-contrast [class*="bg-"] {
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+/* Todas as bordas em amarelo vibrante (#ffff00) */
+body.theme-contrast * {
+  border-color: #ffff00 !important;
+  outline-color: #ffff00 !important;
+}
+
+body.theme-contrast header,
+body.theme-contrast nav,
+body.theme-contrast section,
+body.theme-contrast article,
+body.theme-contrast aside,
+body.theme-contrast button,
+body.theme-contrast input,
+body.theme-contrast textarea,
+body.theme-contrast select,
+body.theme-contrast [class*="rounded-"],
+body.theme-contrast [class*="border"] {
+  border: 2px solid #ffff00 !important;
+  box-shadow: none !important;
+}
+
+/* Letras em preto com borda amarela (preenchimento preto e contorno amarelo nítido) */
+body.theme-contrast,
+body.theme-contrast h1,
+body.theme-contrast h2,
+body.theme-contrast h3,
+body.theme-contrast h4,
+body.theme-contrast h5,
+body.theme-contrast h6,
+body.theme-contrast p,
+body.theme-contrast span,
+body.theme-contrast label,
+body.theme-contrast strong,
+body.theme-contrast b,
+body.theme-contrast em,
+body.theme-contrast i,
+body.theme-contrast li,
+body.theme-contrast a,
+body.theme-contrast button,
+body.theme-contrast input,
+body.theme-contrast textarea,
+body.theme-contrast select,
+body.theme-contrast div {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 1.25px #ffff00 !important;
+  text-stroke: 1.25px #ffff00 !important;
+  paint-order: stroke fill !important;
+  text-shadow:
+    -1px -1px 0 #ffff00,
+     1px -1px 0 #ffff00,
+    -1px  1px 0 #ffff00,
+     1px  1px 0 #ffff00,
+     0px -1px 0 #ffff00,
+     0px  1px 0 #ffff00,
+    -1px  0px 0 #ffff00,
+     1px  0px 0 #ffff00 !important;
+  font-weight: 800 !important;
+}
+
+/* Ícones SVG em preto com borda amarela correspondendo às letras */
+body.theme-contrast svg:not(.brand-logo-svg) {
+  stroke: #ffff00 !important;
+  color: #ffff00 !important;
+  stroke-width: 2.2px !important;
+}
+
+body.theme-contrast svg:not(.brand-logo-svg) path,
+body.theme-contrast svg:not(.brand-logo-svg) circle,
+body.theme-contrast svg:not(.brand-logo-svg) rect,
+body.theme-contrast svg:not(.brand-logo-svg) polygon,
+body.theme-contrast svg:not(.brand-logo-svg) line {
+  stroke: #ffff00 !important;
+  fill: #000000 !important;
+}
+
+/* Campos de entrada e caixas de texto com fundo preto, borda amarela e texto preto com contorno amarelo */
+body.theme-contrast input,
+body.theme-contrast textarea,
+body.theme-contrast select {
+  background-color: #000000 !important;
+  border: 2px solid #ffff00 !important;
+}
+
+body.theme-contrast input::placeholder,
+body.theme-contrast textarea::placeholder {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  -webkit-text-stroke: 1px #ffff00 !important;
+  text-shadow:
+    -1px -1px 0 #ffff00,
+     1px -1px 0 #ffff00,
+    -1px  1px 0 #ffff00,
+     1px  1px 0 #ffff00 !important;
+  opacity: 0.85 !important;
+}
+
+/* Botões normais e de destaque */
+body.theme-contrast button {
+  background-color: #000000 !important;
+  border: 2px solid #ffff00 !important;
+}
+
+body.theme-contrast .btn-contrast-solid,
+body.theme-contrast .active-theme-contrast,
+body.theme-contrast nav button.nav-active {
+  background-color: #000000 !important;
+  border: 3px solid #ffff00 !important;
+  outline: 2px solid #ffff00 !important;
+  outline-offset: 1px;
+}
+
+/* Botão SOS de Emergência Flutuante no Alto Contraste: Fundo Preto com Borda Amarela e Texto Preto com Borda Amarela */
+body.theme-contrast .btn-sos-real {
+  background-color: #000000 !important;
+  border: 3px solid #ffff00 !important;
+  box-shadow: 0 0 20px #ffff00 !important;
+}
+
+body.theme-contrast .btn-sos-real span.animate-ping {
+  border: 2px solid #ffff00 !important;
+  background-color: transparent !important;
+}
+
+/* Navegação inferior no alto contraste */
+body.theme-contrast nav {
+  background-color: #000000 !important;
+  border-top: 3px solid #ffff00 !important;
+}
+
+/* ========================================================
+   3. TEMA ESCURO / DESCANSO VISUAL (WCAG AAA)
+   ======================================================== */
+body.theme-rest {
+  background-color: #070b13 !important;
+  color: #f8fafc !important;
+}
+
+body.theme-rest .bg-white,
+body.theme-rest .bg-slate-50,
+body.theme-rest .bg-slate-100,
+body.theme-rest .bg-sky-50,
+body.theme-rest .bg-sky-100,
+body.theme-rest .bg-emerald-50,
+body.theme-rest .bg-amber-50,
+body.theme-rest .bg-teal-50,
+body.theme-rest .bg-indigo-50,
+body.theme-rest [class*="from-sky-50"],
+body.theme-rest [class*="to-indigo-50"] {
+  background-color: #111827 !important;
+  background-image: none !important;
+  color: #f8fafc !important;
+  border-color: #1f2937 !important;
+}
+
+body.theme-rest header,
+body.theme-rest nav {
+  background-color: #0f172a !important;
+  border-color: #1e293b !important;
+}
+
+body.theme-rest input,
+body.theme-rest textarea,
+body.theme-rest select {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #374151 !important;
+}
+
+body.theme-rest [class*="text-slate-900"],
+body.theme-rest [class*="text-slate-800"],
+body.theme-rest [class*="text-slate-700"] {
+  color: #f8fafc !important;
+}
+
+body.theme-rest [class*="text-slate-600"],
+body.theme-rest [class*="text-slate-500"] {
+  color: #cbd5e1 !important;
+}
+
+/* ========================================================
+   4. ACESSIBILIDADE GERAL (Foco e Toque)
+   ======================================================== */
+:focus-visible {
+  outline: 3px solid #0284c7;
+  outline-offset: 2px;
+}
+
+button, a, input, select {
+  touch-action: manipulation;
+}

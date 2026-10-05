@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="headBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#38bdf8" />
+      <stop offset="100%" stopColor="#0284c7" />
+    </linearGradient>
+    <linearGradient id="headGreenDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#34d399" />
+      <stop offset="100%" stopColor="#10b981" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(10, 5) scale(0.27)">
+    <path d="M 110 210 C 180 80, 340 80, 410 210" stroke="url(#headGreenDark)" stroke-width="44" stroke-linecap="round" fill="none" />
+    <path d="M 110 210 C 180 340, 340 340, 410 210" stroke="url(#headBlueDark)" stroke-width="44" stroke-linecap="round" fill="none" />
+    <circle cx="390" cy="95" r="54" fill="url(#headGreenDark)" />
+    <path d="M 360 95 L 372 95 L 380 75 L 392 115 L 402 85 L 408 95 L 420 95" stroke="#ffffff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <circle cx="256" cy="135" r="32" fill="#34d399" />
+    <path d="M 195 190 C 215 160, 245 160, 256 185 C 267 160, 297 160, 317 190 C 295 205, 275 190, 256 220 C 237 190, 217 205, 195 190 Z" fill="#34d399" />
+    <circle cx="305" cy="265" r="44" stroke="url(#headBlueDark)" stroke-width="18" stroke-linecap="round" stroke-dasharray="210 70" fill="none" />
+  </g>
+  <text x="145" y="78" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="62" letter-spacing="-1.5px">
+    <tspan fill="#38bdf8">VIVA</tspan><tspan fill="#34d399" dx="4">+</tspan>
+  </text>
+</svg>

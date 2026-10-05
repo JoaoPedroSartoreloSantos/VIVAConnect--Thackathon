@@ -1,0 +1,32 @@
+{
+  "users": [],
+  "sessions": [],
+  "smsVerifications": [
+    {
+      "phone": "43999727895",
+      "cleanPhone": "43999727895",
+      "codeHash": "c7e74f89b02d3862d993cede3fd664c0d300da720ecd4b5f72d567433a8fa5297dab9bf3746c6d7398ede07b338a023274e11f98cb08d0a926aab141972e547f",
+      "salt": "ff2ac40df19d2a3958572a312ed3bac7",
+      "createdAt": "2026-10-05T02:39:17.506Z",
+      "expiresAt": "2026-10-05T02:49:17.506Z",
+      "attempts": 0
+    },
+    {
+      "phone": "41999998888",
+      "cleanPhone": "41999998888",
+      "codeHash": "f719cf940abc7a6dbc93c6eab9aaab0ca389c0d66fa926d5ef1624ec40245b76b94c971f0dc717d5deb0051a867c1c763548c87ca6fe9e97c7cccbc4707167a8",
+      "salt": "9e98717b1f591a493c85d9979483d213",
+      "createdAt": "2026-10-05T02:43:29.631Z",
+      "expiresAt": "2026-10-05T02:53:29.631Z",
+      "attempts": 0
+    }
+  ],
+  "healthLogs": [],
+  "medications": [],
+  "medicationDoses": [],
+  "trustedContacts": [],
+  "caregiverInvites": [],
+  "caregiverLinks": [],
+  "caregiverNotifications": [],
+  "sosEvents": []
+}

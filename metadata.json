@@ -1,0 +1,15 @@
+{
+  "name": "VIVA+ | Tecnologia Assistiva e Saúde",
+  "description": "Aplicativo de tecnologia assistiva para idosos e pessoas com dificuldades visuais ou motoras: rotina de saúde, SOS real em pop-up, detector de mensagens suspeitas e ajuda próxima.",
+  "requestFramePermissions": [
+    "CAMERA",
+    "MICROPHONE",
+    "GEOLOCATION",
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

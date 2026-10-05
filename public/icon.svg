@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#22c55e" />
+    </linearGradient>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0284c7" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#ffffff" />
+  <circle cx="256" cy="220" r="180" fill="#f0fdf4" opacity="0.8" />
+  <path d="M 150 110 L 138 90" stroke="#84cc16" stroke-width="12" stroke-linecap="round" />
+  <path d="M 180 92 L 182 68" stroke="#84cc16" stroke-width="12" stroke-linecap="round" />
+  <path d="M 100 240 C 160 120, 320 120, 412 240" fill="none" stroke="url(#greenGrad)" stroke-width="26" stroke-linecap="round" />
+  <path d="M 100 240 C 160 350, 320 350, 412 240" fill="none" stroke="url(#blueGrad)" stroke-width="26" stroke-linecap="round" />
+  <g transform="translate(325, 75)">
+    <circle cx="50" cy="50" r="46" fill="url(#greenGrad)" filter="url(#shadow)" />
+    <path d="M 22 78 L 10 96 L 36 86 Z" fill="#22c55e" />
+    <path d="M 24 50 L 38 50 L 44 34 L 54 66 L 62 42 L 68 50 L 76 50" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  <g transform="translate(256, 235)">
+    <circle cx="0" cy="-62" r="24" fill="#22c55e" />
+    <path d="M -50 -38 C -42 -10, -20 -15, -16 10 L 16 10 C 20 -15, 42 -10, 50 -38 C 36 -46, 26 -26, 12 -2 C 6 8, -6 8, -12 -2 C -26 -26, -36 -46, -50 -38 Z" fill="#22c55e" />
+    <path d="M -14 8 L -14 42 C -14 48, 14 48, 14 42 L 14 8 Z" fill="#22c55e" />
+  </g>
+  <g transform="translate(285, 270)">
+    <circle cx="16" cy="18" r="34" fill="none" stroke="url(#skyGrad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="160 50" />
+    <path d="M -2 -14 L 14 -14 L 14 18 L 32 18" fill="none" stroke="url(#skyGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  <g transform="translate(256, 432)" text-anchor="middle">
+    <text x="-32" y="0" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="78" fill="#0284c7" letter-spacing="-1">VIVA</text>
+    <text x="78" y="0" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="82" fill="#22c55e">+</text>
+  </g>
+</svg>
