@@ -159,8 +159,9 @@ export interface UserProfile {
   phone: string; // Celular principal (sem CPF)
   email?: string; // Opcional
   isGuest: boolean;
-  createdAt: string;
+  createdAt?: string;
   role?: 'idoso' | 'familiar' | 'cuidador' | 'outro';
+  lastLogin?: string;
 }
 
 export type ActiveTab =

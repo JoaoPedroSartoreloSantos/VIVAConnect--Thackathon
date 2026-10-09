@@ -24,6 +24,7 @@ import {
   PlusCircle,
   FileCheck2,
   RefreshCw,
+  Pill,
 } from 'lucide-react';
 import {
   ActiveTab,
@@ -59,6 +60,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
   const [mimeType, setMimeType] = useState<string>('image/jpeg');
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const directCameraInputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<OcrPrescriptionResult | null>(null);
@@ -95,6 +97,18 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
     };
   }, []);
 
+  // Ensure camera stream attaches to video element as soon as it mounts in the DOM
+  useEffect(() => {
+    if (subMode === 'camera' && cameraStream && videoRef.current) {
+      const video = videoRef.current;
+      video.srcObject = cameraStream;
+      video.onloadedmetadata = () => {
+        video.play().catch((err) => console.warn('Aviso play onloadedmetadata:', err));
+      };
+      video.play().catch((err) => console.warn('Aviso play direto:', err));
+    }
+  }, [subMode, cameraStream]);
+
   const stopCamera = () => {
     if (cameraStream) {
       cameraStream.getTracks().forEach((track) => track.stop());
@@ -119,8 +133,8 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: { ideal: 'environment' },
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
+            width: { ideal: 1920, min: 640 },
+            height: { ideal: 1080, min: 480 },
           },
         });
       } catch {
@@ -131,6 +145,9 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
       setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
+          videoRef.current.onloadedmetadata = () => {
+            videoRef.current?.play().catch(console.error);
+          };
           videoRef.current.play().catch((err) => {
             console.error('Erro ao reproduzir stream da câmera:', err);
           });
@@ -155,12 +172,25 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
     if (!videoRef.current || !canvasRef.current) return;
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
+
+    // Use video dimensions, or active track settings, or high-res standard default
+    const track = cameraStream?.getVideoTracks()[0];
+    const trackSettings = track?.getSettings();
+    const captureWidth = video.videoWidth || trackSettings?.width || 1280;
+    const captureHeight = video.videoHeight || trackSettings?.height || 720;
+
+    canvas.width = captureWidth;
+    canvas.height = captureHeight;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+    try {
+      ctx.drawImage(video, 0, 0, captureWidth, captureHeight);
+    } catch (drawErr) {
+      console.warn('Aviso ao capturar quadro do vídeo:', drawErr);
+    }
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     stopCamera();
     setSelectedImage(dataUrl);
     setMimeType('image/jpeg');
@@ -434,7 +464,16 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
 
       {/* MENU MODE */}
       {subMode === 'menu' && !selectedImage && (
-        <section className="space-y-3">
+        <section className="space-y-4">
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            ref={directCameraInputRef}
+            onChange={handleImageFileChange}
+            className="hidden"
+          />
+
           <div className="px-1 flex items-center justify-between">
             <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
               O que você deseja fazer agora?
@@ -442,12 +481,13 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
             <span className="text-xs font-semibold text-slate-500">Escolha uma ação:</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Primary Action 1: Native Phone Camera with Auto-focus */}
             <button
               type="button"
-              onClick={handleStartCamera}
-              className="btn-contrast-solid w-full text-left bg-gradient-to-r from-teal-600 to-emerald-700 hover:from-teal-700 hover:to-emerald-800 active:scale-[0.98] text-white p-5 rounded-3xl shadow-lg border-2 border-teal-300 flex items-center gap-4 transition group"
-              aria-label="Escanear remédio com a câmera: Abrir câmera para apontar para caixa de remédio, bula ou receita"
+              onClick={() => directCameraInputRef.current?.click()}
+              className="btn-contrast-solid w-full text-left bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 active:scale-[0.98] text-white p-5 rounded-3xl shadow-lg border-2 border-emerald-300 flex items-center gap-4 transition group cursor-pointer"
+              aria-label="Fotografar remédio com a câmera do celular"
             >
               <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
                 <Camera className="w-8 h-8" />
@@ -455,21 +495,45 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <h4 className="text-base sm:text-lg font-black leading-tight">
-                    Escanear remédio com a câmera
+                    Fotografar remédio com foco automático
                   </h4>
                   <ArrowRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition shrink-0" />
                 </div>
-                <p className="text-xs sm:text-sm text-teal-100 font-medium mt-1 leading-snug">
-                  Aponte para a caixa, frasco, cartela ou receita. O VIVA+ escaneia e lê em voz alta o nome e como tomar.
+                <p className="text-xs sm:text-sm text-emerald-100 font-medium mt-1 leading-snug">
+                  Abre a câmera do seu celular com foco nítido e flash para ler caixas, bulas e receitas.
                 </p>
               </div>
             </button>
 
+            {/* Action 2: Live Viewfinder Camera */}
+            <button
+              type="button"
+              onClick={handleStartCamera}
+              className="btn-contrast-solid w-full text-left bg-teal-700 hover:bg-teal-800 active:scale-[0.98] text-white p-5 rounded-3xl shadow-md border-2 border-teal-400 flex items-center gap-4 transition group cursor-pointer"
+              aria-label="Escanear com visor na tela"
+            >
+              <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
+                <ScanText className="w-8 h-8" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-base sm:text-lg font-black leading-tight">
+                    Abrir visor da câmera na tela
+                  </h4>
+                  <ArrowRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition shrink-0" />
+                </div>
+                <p className="text-xs sm:text-sm text-teal-100 font-medium mt-1 leading-snug">
+                  Veja a imagem do remédio ao vivo na tela antes de capturar.
+                </p>
+              </div>
+            </button>
+
+            {/* Action 3: Choose from gallery */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="btn-contrast-solid w-full text-left bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white p-5 rounded-3xl shadow-md flex items-center gap-4 transition group"
-              aria-label="Escolher uma foto: Selecionar imagem salva no aparelho"
+              className="btn-contrast-solid w-full text-left bg-sky-600 hover:bg-sky-700 active:scale-[0.98] text-white p-5 rounded-3xl shadow-md flex items-center gap-4 transition group cursor-pointer"
+              aria-label="Escolher uma foto salva na galeria"
             >
               <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
                 <Upload className="w-8 h-8" />
@@ -477,21 +541,22 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <h4 className="text-base sm:text-lg font-black leading-tight">
-                    Escolher uma foto
+                    Escolher uma foto da galeria
                   </h4>
                   <ArrowRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition shrink-0" />
                 </div>
                 <p className="text-xs sm:text-sm text-sky-100 font-medium mt-1 leading-snug">
-                  Selecione uma foto da sua galeria de fotos ou arquivos do celular.
+                  Selecione uma imagem já salva no seu aparelho para analisar.
                 </p>
               </div>
             </button>
 
+            {/* Action 4: Text speech and explanation */}
             <button
               type="button"
               onClick={() => setSubMode('text')}
-              className="btn-contrast-solid w-full text-left bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white p-5 rounded-3xl shadow-md flex items-center gap-4 transition group"
-              aria-label="Ouvir um texto: Digitar ou colar texto para leitura em voz alta"
+              className="btn-contrast-solid w-full text-left bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white p-5 rounded-3xl shadow-md flex items-center gap-4 transition group cursor-pointer"
+              aria-label="Ouvir um texto: Digitar ou ditar no microfone"
             >
               <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
                 <FileText className="w-8 h-8" />
@@ -499,7 +564,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                   <h4 className="text-base sm:text-lg font-black leading-tight">
-                    Ouvir um texto
+                    Ouvir ou ditar um texto
                   </h4>
                   <ArrowRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition shrink-0" />
                 </div>
@@ -621,22 +686,22 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 pt-3">
             <button
               type="button"
               onClick={handleCapturePhoto}
-              className="btn-contrast-solid bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black py-4 px-4 rounded-2xl text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg"
+              className="btn-contrast-solid bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black py-4.5 px-5 rounded-2xl text-sm sm:text-base flex items-center justify-center gap-3 shadow-lg cursor-pointer"
               aria-label="Escanear remédio agora"
             >
-              <ScanText className="w-6 h-6 animate-pulse" />
+              <ScanText className="w-6 h-6 animate-pulse shrink-0" />
               <span>Escanear remédio agora</span>
             </button>
             <button
               type="button"
               onClick={handleCancelCamera}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-3.5 px-4 rounded-2xl text-xs flex items-center justify-center gap-1.5"
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-4 px-5 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-700 transition cursor-pointer"
             >
-              <span>Cancelar</span>
+              <span>Voltar ao menu</span>
             </button>
           </div>
         </section>
@@ -739,7 +804,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
             Examinando a imagem...
           </h3>
           <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-            O VIVA+ está extraindo cada palavra com cuidado sem adivinhar dosagens.
+            O VIVAConnect está extraindo cada palavra com cuidado sem adivinhar dosagens.
           </p>
         </section>
       )}
@@ -755,6 +820,47 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
       {/* OCR RESULT */}
       {result && (
         <section className="space-y-4">
+          {/* Medicamento Identificado em Destaque com Ícone de Remédio */}
+          {result.medicineName && (
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white rounded-3xl p-5 sm:p-6 shadow-xl border-2 border-emerald-300 space-y-3.5">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full text-emerald-100 flex items-center gap-1.5 shadow-inner">
+                  <Pill className="w-4 h-4 text-emerald-200" />
+                  Medicamento Identificado pela Câmera
+                </span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleSpeak(
+                      `Remédio identificado: ${result.medicineName}. ${result.dosageAndForm ? `Dosagem: ${result.dosageAndForm}.` : ''} ${result.instructions ? `Instruções: ${result.instructions}` : ''}`,
+                      'med-ident'
+                    )
+                  }
+                  className="bg-white hover:bg-emerald-50 text-emerald-900 px-3.5 py-1.5 rounded-xl font-black text-xs flex items-center gap-1.5 shadow transition"
+                >
+                  <Volume2 className="w-4 h-4 text-emerald-600" />
+                  <span>Ouvir</span>
+                </button>
+              </div>
+
+              <div>
+                <h4 className="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
+                  {result.medicineName}
+                </h4>
+                {result.dosageAndForm && (
+                  <p className="text-sm sm:text-base font-extrabold text-emerald-100 mt-1">
+                    Dosagem: {result.dosageAndForm}
+                  </p>
+                )}
+                {result.instructions && (
+                  <p className="text-xs sm:text-sm text-teal-100 font-medium mt-1 leading-relaxed">
+                    Como tomar: {result.instructions}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
           {(!result.isLegible || result.qualityIssue !== 'nenhum') && (
             <div className="p-5 bg-amber-50 dark:bg-amber-950/80 rounded-3xl border-3 border-amber-500 text-amber-950 dark:text-amber-100 space-y-3">
               <div className="flex items-center gap-2 font-black text-sm sm:text-base">
@@ -763,7 +869,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
               </div>
               <p className="text-xs sm:text-sm font-medium leading-relaxed">
                 {result.qualityAdvice ||
-                  'A foto não ficou nítida o suficiente. Para sua segurança médica, o VIVA+ nunca completa palavras ou doses por adivinhação.'}
+                  'A foto não ficou nítida o suficiente. Para sua segurança médica, o VIVAConnect nunca completa palavras ou doses por adivinhação.'}
               </p>
               <button
                 type="button"
@@ -1120,7 +1226,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
           </div>
 
           <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-            Digite, cole ou fale o texto que deseja que o VIVA+ leia em voz alta ou explique:
+            Digite, cole ou fale o texto que deseja que o VIVAConnect leia em voz alta ou explique:
           </p>
 
           <div>

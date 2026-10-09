@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   User,
   Smartphone,
+  Pill,
 } from 'lucide-react';
 import { ActiveTab, HealthLog, MedicationReminder, TrustedContact, UserProfile } from '../types';
 import { speakText } from '../utils/speech';
@@ -107,29 +108,29 @@ export const HomeView: React.FC<HomeViewProps> = ({
       <PermissionsSetupBanner />
 
       {/* 3. Destaques principais: "Ler e ouvir" e "Pedir ajuda" */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
         {/* Botão 1: Ler e ouvir */}
         <button
           type="button"
           onClick={() => onNavigate('reader')}
-          className="btn-contrast-solid w-full text-left bg-gradient-to-r from-teal-600 to-emerald-700 hover:from-teal-700 hover:to-emerald-800 active:scale-[0.98] text-white p-4 sm:p-5 rounded-3xl border-2 border-teal-400 shadow-md hover:shadow-lg transition flex items-center gap-3.5 sm:gap-4 group min-h-[76px]"
+          className="btn-contrast-solid w-full text-left bg-gradient-to-r from-teal-600 to-emerald-700 hover:from-teal-700 hover:to-emerald-800 active:scale-[0.98] text-white p-4 sm:p-5 rounded-3xl border-2 border-teal-400 shadow-md hover:shadow-lg transition flex items-center gap-4 group min-h-[82px] cursor-pointer"
           aria-label="Acessar Ler e ouvir: Fotografar remédio, bula ou ouvir qualquer texto"
         >
-          <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
+          <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
             <ScanText className="w-7 h-7 sm:w-8 sm:h-8" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-black uppercase tracking-wider bg-white/25 text-white px-2 py-0.5 rounded-full">
-                Leitura
+              <span className="text-[11px] font-black uppercase tracking-wider bg-white/25 text-white px-2.5 py-0.5 rounded-full">
+                Leitura e Bula
               </span>
               <ChevronRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition shrink-0" />
             </div>
-            <h2 className="text-base sm:text-lg font-black leading-tight text-white mt-0.5">
+            <h2 className="text-base sm:text-lg font-black leading-tight text-white mt-1">
               Ler e ouvir
             </h2>
             <p className="text-xs text-teal-100 font-medium mt-0.5 line-clamp-2">
-              Fotografe caixas de remédios, receitas e bulas ou ouça textos digitados.
+              Fotografe caixas de remédios, receitas e bulas ou ouça textos falados.
             </p>
           </div>
         </button>
@@ -138,66 +139,66 @@ export const HomeView: React.FC<HomeViewProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('assistant')}
-          className="btn-contrast-solid w-full text-left bg-gradient-to-r from-indigo-600 to-sky-700 hover:from-indigo-700 hover:to-sky-800 active:scale-[0.98] text-white p-4 sm:p-5 rounded-3xl border-2 border-indigo-400 shadow-md hover:shadow-lg transition flex items-center gap-3.5 sm:gap-4 group min-h-[76px]"
+          className="btn-contrast-solid w-full text-left bg-gradient-to-r from-indigo-600 to-sky-700 hover:from-indigo-700 hover:to-sky-800 active:scale-[0.98] text-white p-4 sm:p-5 rounded-3xl border-2 border-indigo-400 shadow-md hover:shadow-lg transition flex items-center gap-4 group min-h-[82px] cursor-pointer"
           aria-label="Acessar Pedir ajuda: Falar o que preciso no microfone ou tirar dúvidas"
         >
-          <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
+          <div className="w-14 h-14 rounded-2xl bg-white/20 text-white flex items-center justify-center shrink-0 shadow-inner group-hover:scale-105 transition">
             <MessageSquareHeart className="w-7 h-7 sm:w-8 sm:h-8" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-black uppercase tracking-wider bg-white/25 text-white px-2 py-0.5 rounded-full">
+              <span className="text-[11px] font-black uppercase tracking-wider bg-white/25 text-white px-2.5 py-0.5 rounded-full">
                 Voz e Chat
               </span>
               <ChevronRight className="w-5 h-5 opacity-80 group-hover:translate-x-1 transition shrink-0" />
             </div>
-            <h2 className="text-base sm:text-lg font-black leading-tight text-white mt-0.5">
+            <h2 className="text-base sm:text-lg font-black leading-tight text-white mt-1">
               Pedir ajuda
             </h2>
             <p className="text-xs text-indigo-100 font-medium mt-0.5 line-clamp-2">
-              Toque para falar no microfone ou digite sua dúvida com calma.
+              Toque para falar no microfone ou tire dúvidas de saúde com calma.
             </p>
           </div>
         </button>
       </div>
 
       {/* 4. Ações de Apoio e Rotina */}
-      <div className="px-1 flex items-center justify-between pt-1">
+      <div className="px-1 flex items-center justify-between pt-2">
         <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight">
           Mais ações de cuidado e rotina
         </h3>
         <span className="text-xs font-semibold text-slate-500">Toque para abrir:</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {/* Card 1: Minha Saúde (Pressão, Diabetes e Remédios) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+        {/* Card 1: Minha Saúde (Pressão e Glicemia) */}
         <button
           onClick={() => onNavigate('health')}
-          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-emerald-50/50 dark:hover:bg-slate-800 p-4 rounded-3xl border-2 border-emerald-300 dark:border-emerald-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex sm:flex-col items-start gap-3.5 group"
-          aria-label="Acessar Minha Saúde: Pressão, glicemia e remédios para acompanhamento"
+          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-emerald-50/50 dark:hover:bg-slate-800 p-4.5 rounded-3xl border-2 border-emerald-300 dark:border-emerald-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex items-start gap-4 group cursor-pointer"
+          aria-label="Acessar Minha Saúde: Pressão arterial e nível de glicemia"
         >
-          <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
+          <div className="w-13 h-13 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
             <HeartPulse className="w-6 h-6" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
-                Minha saúde
+                Pressão e Glicemia
               </h4>
               <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 shrink-0 transition" />
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 leading-snug">
-              Anote pressão arterial, nível de diabetes (glicemia) e remédios para acompanhamento.
+              Anote pressão arterial e nível de diabetes com histórico organizado.
             </p>
             {latestHealthLog && (
-              <div className="mt-2 flex flex-wrap gap-1">
+              <div className="mt-2 flex flex-wrap gap-1.5">
                 {latestHealthLog.systolic && latestHealthLog.diastolic && (
-                  <span className="text-[10px] font-black bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                  <span className="text-[10px] font-black bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 rounded-lg border border-emerald-200 dark:border-emerald-800">
                     Pressão: {latestHealthLog.systolic}/{latestHealthLog.diastolic}
                   </span>
                 )}
                 {latestHealthLog.glucose && (
-                  <span className="text-[10px] font-black bg-sky-50 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2 py-0.5 rounded-lg border border-sky-200 dark:border-sky-800">
+                  <span className="text-[10px] font-black bg-sky-50 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2.5 py-0.5 rounded-lg border border-sky-200 dark:border-sky-800">
                     Glicemia: {latestHealthLog.glucose} mg/dL
                   </span>
                 )}
@@ -206,13 +207,41 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </button>
 
-        {/* Card 2: Ajuda Perto de Mim */}
+        {/* Card 2: Remédios e Lembretes (Ícone de Remédios Destacado!) */}
+        <button
+          onClick={() => onNavigate('health')}
+          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-sky-50/50 dark:hover:bg-slate-800 p-4.5 rounded-3xl border-2 border-sky-300 dark:border-sky-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex items-start gap-4 group cursor-pointer"
+          aria-label="Acessar Remédios e Lembretes: Horários, doses e notificações"
+        >
+          <div className="w-13 h-13 rounded-2xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
+            <Pill className="w-6 h-6" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
+                Remédios e Lembretes
+              </h4>
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 shrink-0 transition" />
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 leading-snug">
+              Horários de medicamentos com aviso sonoro e notificação no celular.
+            </p>
+            <div className="mt-2">
+              <span className="text-[10px] font-black bg-sky-50 dark:bg-sky-950 text-sky-800 dark:text-sky-300 px-2.5 py-0.5 rounded-lg border border-sky-200 dark:border-sky-800 inline-flex items-center gap-1">
+                <Pill className="w-3 h-3 text-sky-600" />
+                <span>Alarmes no horário certo</span>
+              </span>
+            </div>
+          </div>
+        </button>
+
+        {/* Card 3: Ajuda Perto de Mim */}
         <button
           onClick={() => onNavigate('places')}
-          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-sky-50/50 dark:hover:bg-slate-800 p-4 rounded-3xl border-2 border-sky-300 dark:border-sky-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex sm:flex-col items-start gap-3.5 group"
+          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-teal-50/50 dark:hover:bg-slate-800 p-4.5 rounded-3xl border-2 border-teal-300 dark:border-teal-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex items-start gap-4 group cursor-pointer"
           aria-label="Acessar Ajuda Perto de Mim: Postos de saúde, farmácias e emergências"
         >
-          <div className="w-12 h-12 rounded-2xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
+          <div className="w-13 h-13 rounded-2xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
             <MapPin className="w-6 h-6" />
           </div>
           <div className="flex-1 min-w-0">
@@ -220,7 +249,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
                 Ajuda perto de mim
               </h4>
-              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-sky-600 shrink-0 transition" />
+              <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-teal-600 shrink-0 transition" />
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium mt-1 leading-snug">
               Encontre postos de saúde (UBS), Farmácia Popular e telefones do SAMU 192.
@@ -228,13 +257,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
           </div>
         </button>
 
-        {/* Card 3: Verificar Mensagem */}
+        {/* Card 4: Verificar Mensagem */}
         <button
           onClick={() => onNavigate('scam')}
-          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-amber-50/50 dark:hover:bg-slate-800 p-4 rounded-3xl border-2 border-amber-300 dark:border-amber-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex sm:flex-col items-start gap-3.5 group"
+          className="w-full text-left bg-white dark:bg-slate-900 hover:bg-amber-50/50 dark:hover:bg-slate-800 p-4.5 rounded-3xl border-2 border-amber-300 dark:border-amber-700 shadow-sm hover:shadow-md transition active:scale-[0.98] flex items-start gap-4 group cursor-pointer"
           aria-label="Acessar Verificar Mensagem: Avaliar se mensagem recebida é golpe"
         >
-          <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
+          <div className="w-13 h-13 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 transition">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div className="flex-1 min-w-0">
@@ -253,11 +282,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
       {/* 4. Próximo Remédio Programado (se houver) */}
       {nextMedication ? (
-        <section className="bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 shadow-sm border-l-8 border-l-sky-600 border border-slate-200 dark:border-slate-800 space-y-3">
+        <section className="bg-white dark:bg-slate-900 rounded-3xl p-5 shadow-sm border-l-8 border-l-sky-600 border border-slate-200 dark:border-slate-800 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-sky-600" />
-              PRÓXIMO LEMBRETE PROGRAMADO
+            <h3 className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <Pill className="w-5 h-5 text-sky-600" />
+              PRÓXIMO REMÉDIO PROGRAMADO
             </h3>
             <button
               onClick={() =>
@@ -265,7 +294,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                   `Lembrete: Seu remédio ${nextMedication.name}, dose ${nextMedication.dosage}, está programado para as ${nextMedication.time}.`
                 )
               }
-              className="text-sky-600 hover:text-sky-800 p-1 rounded-lg"
+              className="text-sky-600 hover:text-sky-800 p-1.5 rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800"
               aria-label="Ouvir lembrete de remédio"
             >
               <Volume2 className="w-4 h-4" />
@@ -282,16 +311,16 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <p className="text-xs text-slate-500 italic mt-0.5">Obs: {nextMedication.notes}</p>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="grid grid-cols-2 gap-4 sm:gap-5 pt-3 border-t border-slate-100 dark:border-slate-800">
             <button
               onClick={() => {
                 onUpdateMedicationStatus(nextMedication.id, 'taken');
                 speakText(`Marcado que você tomou ${nextMedication.name}.`);
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-2xl flex items-center justify-center gap-1.5 text-xs sm:text-sm shadow transition"
+              className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm shadow-md transition cursor-pointer"
               aria-label={`Confirmar que tomou ${nextMedication.name}`}
             >
-              <CheckCircle2 className="w-4 h-4" />
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>Tomei</span>
             </button>
             <button
@@ -299,19 +328,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 onUpdateMedicationStatus(nextMedication.id, 'skipped');
                 speakText(`Marcado que não tomou ${nextMedication.name} agora.`);
               }}
-              className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 font-bold py-2.5 px-3 rounded-2xl flex items-center justify-center gap-1.5 text-xs sm:text-sm border border-slate-300 dark:border-slate-700 transition"
+              className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 active:scale-95 font-black py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm border border-slate-300 dark:border-slate-700 transition cursor-pointer"
               aria-label={`Marcar que não tomou ${nextMedication.name}`}
             >
-              <XCircle className="w-4 h-4 text-slate-500" />
+              <XCircle className="w-4 h-4 text-slate-500 shrink-0" />
               <span>Não tomei</span>
             </button>
           </div>
         </section>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-sky-50 dark:bg-sky-950 text-sky-600 flex items-center justify-center shrink-0">
-              <Clock className="w-5 h-5" />
+            <div className="w-12 h-12 rounded-2xl bg-sky-50 dark:bg-sky-950 text-sky-600 flex items-center justify-center shrink-0">
+              <Pill className="w-6 h-6" />
             </div>
             <div>
               <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">

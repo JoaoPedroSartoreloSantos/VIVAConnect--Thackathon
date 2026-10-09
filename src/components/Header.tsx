@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={onNavigateHome}
           className="flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-xl p-1 -ml-1 transition hover:opacity-90 shrink-0"
-          aria-label="VIVA+ Início - Toque para voltar à tela inicial"
+          aria-label="VIVAConnect Início - Toque para voltar à tela inicial"
         >
           <VivaLogo variant="header" size="md" />
         </button>
@@ -83,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onNavigateAuth}
               className="bg-sky-50 hover:bg-sky-100 text-sky-900 dark:bg-sky-950 dark:text-sky-200 border-2 border-sky-400 dark:border-sky-600 px-2 sm:px-2.5 py-1.5 rounded-xl font-black text-xs flex items-center gap-1 transition shrink-0"
-              aria-label="Entrar ou criar conta com celular no VIVA+"
+              aria-label="Entrar ou criar conta com celular no VIVAConnect"
               title="Entrar com celular"
             >
               <Smartphone className="w-3.5 h-3.5 text-sky-600 dark:text-sky-300" />
@@ -180,7 +180,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenAbout}
             className="p-1.5 text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
-            aria-label="Informações sobre o aplicativo VIVA+"
+            aria-label="Informações sobre o aplicativo VIVAConnect"
             title="Sobre o aplicativo"
           >
             <Info className="w-4 h-4" />

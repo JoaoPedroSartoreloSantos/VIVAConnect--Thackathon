@@ -1,18 +1,38 @@
 {
-  "name": "VIVA+ | Tecnologia Assistiva e Saúde",
-  "short_name": "VIVA+",
-  "description": "Aplicativo de tecnologia assistiva para idosos e pessoas com dificuldades visuais ou motoras.",
+  "id": "/",
+  "name": "VIVAConnect | Tecnologia Assistiva e Saúde",
+  "short_name": "VIVAConnect",
+  "description": "Aplicativo de tecnologia assistiva para idosos e pessoas com dificuldades visuais ou motoras: rotina de saúde, remédios pontuais, SOS e ajuda próxima.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0284c7",
   "orientation": "portrait-primary",
   "icons": [
     {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "/icon.svg",
       "sizes": "192x192 512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

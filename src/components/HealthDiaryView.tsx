@@ -154,7 +154,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
   };
 
   const generateDoctorSummary = () => {
-    let summary = `*RELATÓRIO DO DIÁRIO DE SAÚDE - VIVA+*\n`;
+    let summary = `*RELATÓRIO DO DIÁRIO DE SAÚDE - VIVACONNECT*\n`;
     summary += `Gerado em: ${new Date().toLocaleDateString('pt-BR')}\n\n`;
     summary += `--- MEDIÇÕES REGISTRADAS ---\n`;
     if (logs.length === 0) {
@@ -186,7 +186,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
       });
     }
 
-    summary += `\n*Aviso*: Dados informados voluntariamente pelo paciente. O VIVA+ não substitui avaliação clínica médica.`;
+    summary += `\n*Aviso*: Dados informados voluntariamente pelo paciente. O VIVAConnect não substitui avaliação clínica médica.`;
     return summary;
   };
 
@@ -239,7 +239,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
           <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
             <AlertCircle className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
             <span>
-              <strong>Atenção médica:</strong> O VIVA+ não faz diagnósticos e nunca altera suas doses. Consulte sempre sua equipe de saúde.
+              <strong>Atenção médica:</strong> O VIVAConnect não faz diagnósticos e nunca altera suas doses. Consulte sempre sua equipe de saúde.
             </span>
           </div>
           <div className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
@@ -325,38 +325,41 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
         </div>
 
         {/* Sub Navigation */}
-        <div className="grid grid-cols-3 gap-1.5 mt-4 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl">
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-4 bg-slate-100 dark:bg-slate-800/80 p-2.5 rounded-2xl">
           <button
             onClick={() => setActiveSubTab('records')}
-            className={`py-2 px-1 text-xs font-black rounded-xl transition flex flex-col items-center justify-center text-center ${
+            className={`py-3.5 px-2 text-xs font-black rounded-xl transition flex flex-col items-center justify-center text-center gap-1.5 ${
               activeSubTab === 'records'
-                ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-sm border border-emerald-300 dark:border-emerald-700'
+                ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md border-2 border-emerald-400 dark:border-emerald-600'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
           >
+            <HeartPulse className="w-5 h-5 text-emerald-600 shrink-0" />
             <span className="leading-tight">Pressão e Diabetes</span>
             <span className="text-[10px] opacity-75">({logs.length})</span>
           </button>
           <button
             onClick={() => setActiveSubTab('meds')}
-            className={`py-2 px-1 text-xs font-black rounded-xl transition flex flex-col items-center justify-center text-center ${
+            className={`py-3.5 px-2 text-xs font-black rounded-xl transition flex flex-col items-center justify-center text-center gap-1.5 ${
               activeSubTab === 'meds'
-                ? 'bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-400 shadow-sm border border-sky-300 dark:border-sky-700'
+                ? 'bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-400 shadow-md border-2 border-sky-400 dark:border-sky-600'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
           >
-            <span className="leading-tight">Remédios (Acompanhamento)</span>
+            <Pill className="w-5 h-5 text-sky-600 shrink-0" />
+            <span className="leading-tight">Remédios</span>
             <span className="text-[10px] opacity-75">({medications.length})</span>
           </button>
           <button
             onClick={() => setActiveSubTab('summary')}
-            className={`py-2 px-1 text-xs font-black rounded-xl transition flex flex-col items-center justify-center text-center ${
+            className={`py-3.5 px-2 text-xs font-black rounded-xl transition flex flex-col items-center justify-center text-center gap-1.5 ${
               activeSubTab === 'summary'
-                ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-400 shadow-sm border border-purple-300 dark:border-purple-700'
+                ? 'bg-white dark:bg-slate-900 text-purple-700 dark:text-purple-400 shadow-md border-2 border-purple-400 dark:border-purple-600'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
             }`}
           >
-            <span className="leading-tight">Resumo para o Médico</span>
+            <FileText className="w-5 h-5 text-purple-600 shrink-0" />
+            <span className="leading-tight">Resumo Médico</span>
             <span className="text-[10px] opacity-75">(Relatório)</span>
           </button>
         </div>
@@ -840,9 +843,9 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              O VIVA+ avisa no horário exato com som, voz acessível e notificação do aparelho quando for o momento de tomar cada remédio.
+              O VIVAConnect avisa no horário exato com som, voz acessível e notificação do aparelho quando for o momento de tomar cada remédio.
             </p>
-            <div className="flex flex-wrap gap-2 pt-1">
+            <div className="flex flex-wrap gap-3 pt-2">
               {getNotificationPermission() !== 'granted' && isNotificationSupported() && (
                 <button
                   type="button"
@@ -852,9 +855,9 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
                       speakText('Notificações de remédios ativadas com sucesso neste aparelho.');
                     }
                   }}
-                  className="btn-contrast-solid bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2 px-3 rounded-xl text-xs flex items-center gap-1.5 shadow"
+                  className="btn-contrast-solid bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 px-4 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-md cursor-pointer"
                 >
-                  <BellRing className="w-3.5 h-3.5" />
+                  <BellRing className="w-4 h-4" />
                   <span>Permitir Notificações no Aparelho</span>
                 </button>
               )}
@@ -866,9 +869,9 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
                     alert(res.message);
                   }
                 }}
-                className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-800 dark:text-emerald-300 font-black py-2 px-3 rounded-xl text-xs border border-emerald-300 dark:border-emerald-700 flex items-center gap-1.5 transition"
+                className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-800 dark:text-emerald-300 font-black py-3 px-4 rounded-xl text-xs sm:text-sm border border-emerald-300 dark:border-emerald-700 flex items-center gap-2 transition cursor-pointer shadow-sm"
               >
-                <Volume2 className="w-3.5 h-3.5" />
+                <Volume2 className="w-4 h-4" />
                 <span>Testar Notificação com Som Agora</span>
               </button>
             </div>
@@ -941,17 +944,17 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
                   className="w-full p-3 rounded-2xl border-2 border-slate-300 dark:border-slate-700 text-sm bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white"
                 />
               </div>
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-4 pt-3.5">
                 <button
                   type="button"
                   onClick={() => setIsAddingMed(false)}
-                  className="flex-1 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold py-3 rounded-2xl text-sm"
+                  className="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold py-3.5 px-4 rounded-2xl text-sm transition cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="btn-contrast-solid flex-1 bg-sky-600 hover:bg-sky-700 text-white font-black py-3 rounded-2xl text-sm shadow-md"
+                  className="btn-contrast-solid flex-1 bg-sky-600 hover:bg-sky-700 text-white font-black py-3.5 px-4 rounded-2xl text-sm shadow-md transition cursor-pointer"
                 >
                   Salvar Remédio
                 </button>

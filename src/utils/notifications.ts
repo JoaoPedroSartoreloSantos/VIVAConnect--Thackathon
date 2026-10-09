@@ -83,24 +83,57 @@ export function sendMedicationNotification(
 
   // 3. Dispatch system notification if supported & permitted
   if (isNotificationSupported() && Notification.permission === 'granted') {
-    try {
-      const title = `⏰ Hora do seu Remédio: ${med.name}`;
-      const body = `Dose: ${med.dosage} (${scheduleTime}) • ${med.notes ? `Obs: ${med.notes}` : 'Tome conforme prescrição médica.'}`;
+    const title = `⏰ Hora do seu Remédio: ${med.name}`;
+    const body = `Dose: ${med.dosage} (${scheduleTime}) • ${med.notes ? `Obs: ${med.notes}` : 'Tome conforme prescrição médica.'}`;
 
-      const notification = new Notification(title, {
-        body,
-        icon: '/icon.svg',
-        badge: '/icon.svg',
-        tag: `viva-med-${med.id}-${scheduleTime}`,
-        requireInteraction: true,
-      });
-
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-      };
-    } catch (err) {
-      console.warn('Erro ao disparar notificação do navegador:', err);
+    // Prefer service worker registration on mobile devices / PWAs
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then((reg) => {
+          return reg.showNotification(title, {
+            body,
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            tag: `vivaconnect-med-${med.id}-${scheduleTime}`,
+            renotify: true,
+            requireInteraction: true,
+            // Vibration pattern for mobile phones (buzz - pause - buzz)
+            vibrate: [300, 150, 300, 150, 300],
+          } as any);
+        })
+        .catch(() => {
+          try {
+            const notification = new Notification(title, {
+              body,
+              icon: '/icon-192.png',
+              badge: '/icon-192.png',
+              tag: `vivaconnect-med-${med.id}-${scheduleTime}`,
+              requireInteraction: true,
+            });
+            notification.onclick = () => {
+              window.focus();
+              notification.close();
+            };
+          } catch (e) {
+            console.warn('Erro ao disparar notificação direta:', e);
+          }
+        });
+    } else {
+      try {
+        const notification = new Notification(title, {
+          body,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: `vivaconnect-med-${med.id}-${scheduleTime}`,
+          requireInteraction: true,
+        });
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
+      } catch (err) {
+        console.warn('Erro ao disparar notificação do navegador:', err);
+      }
     }
   }
 }
@@ -116,19 +149,46 @@ export async function testMedicationNotification(): Promise<{
 
   // Play audio chime and voice
   playReminderChime();
-  speakText('Notificação de teste do VIVA+. Os avisos de remédio avisarão no horário com som e mensagem no seu aparelho.');
+  speakText('Notificação de teste do VIVAConnect. Os avisos de remédio avisarão no horário com som e mensagem no seu aparelho.');
 
   if (granted && isNotificationSupported()) {
-    try {
-      const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      new Notification('⏰ Teste de Lembrete: VIVA+', {
-        body: `Notificações ativas no seu aparelho às ${nowTime}! Seus remédios avisarão pontualmente.`,
-        icon: '/icon.svg',
-        requireInteraction: true,
-      });
-    } catch (e) {
-      console.warn('Erro ao enviar notificação de teste:', e);
+    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const title = '⏰ Teste de Lembrete: VIVAConnect';
+    const body = `Notificações ativas no seu aparelho às ${nowTime}! Seus remédios avisarão pontualmente com som e alerta.`;
+
+    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then((reg) => {
+          return reg.showNotification(title, {
+            body,
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            tag: 'vivaconnect-test-notification',
+            vibrate: [250, 100, 250],
+            requireInteraction: true,
+          } as any);
+        })
+        .catch(() => {
+          try {
+            new Notification(title, {
+              body,
+              icon: '/icon-192.png',
+              requireInteraction: true,
+            });
+          } catch {}
+        });
+    } else {
+      try {
+        new Notification(title, {
+          body,
+          icon: '/icon-192.png',
+          requireInteraction: true,
+        });
+      } catch (e) {
+        console.warn('Erro ao enviar notificação de teste:', e);
+      }
     }
+
     return {
       permissionGranted: true,
       message: 'Notificação enviada com sucesso! Seu aparelho está configurado para avisar no horário.',

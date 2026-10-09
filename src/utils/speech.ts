@@ -1,15 +1,19 @@
-// Accessibility Audio Assistant for VIVA+
+// Accessibility Audio Assistant for VIVAConnect
 
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let cachedVoices: SpeechSynthesisVoice[] = [];
 
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-  cachedVoices = window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => {
+  const refreshVoices = () => {
     try {
-      cachedVoices = window.speechSynthesis.getVoices();
+      const v = window.speechSynthesis.getVoices();
+      if (v && v.length > 0) {
+        cachedVoices = v;
+      }
     } catch {}
   };
+  refreshVoices();
+  window.speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
 export function isSpeechSupported(): boolean {
@@ -57,20 +61,28 @@ export function speakText(
     .trim();
 
   const utterance = new SpeechSynthesisUtterance(cleanText);
-  utterance.lang = 'pt-BR';
   utterance.rate = rate;
   utterance.pitch = 1.0;
   utterance.volume = 1.0;
 
-  // Select natural Brazilian Portuguese voice if available
-  const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
+  // Retrieve available voices dynamically
+  const availableVoices =
+    cachedVoices.length > 0
+      ? cachedVoices
+      : window.speechSynthesis.getVoices();
+
+  // Explicit priority for natural Brazilian Portuguese voices
   const ptVoice =
-    voices.find((v) => v.lang === 'pt-BR' || v.lang === 'pt_BR') ||
-    voices.find((v) => v.lang.startsWith('pt')) ||
-    voices.find((v) => v.name.toLowerCase().includes('brazil') || v.name.toLowerCase().includes('portuguese'));
+    availableVoices.find((v) => v.lang === 'pt-BR' || v.lang === 'pt_BR' || v.lang.toLowerCase() === 'pt-br') ||
+    availableVoices.find((v) => v.lang.toLowerCase().startsWith('pt') && (v.name.toLowerCase().includes('brazil') || v.name.toLowerCase().includes('brasil'))) ||
+    availableVoices.find((v) => v.lang.toLowerCase().startsWith('pt')) ||
+    availableVoices.find((v) => v.name.toLowerCase().includes('portug') || v.name.toLowerCase().includes('brasil'));
 
   if (ptVoice) {
     utterance.voice = ptVoice;
+    utterance.lang = ptVoice.lang;
+  } else {
+    utterance.lang = 'pt-BR';
   }
 
   utterance.onstart = () => {
@@ -83,7 +95,6 @@ export function speakText(
   };
 
   utterance.onerror = (e) => {
-    // 'canceled' or 'interrupted' errors are normal when the user stops audio
     if (e.error !== 'canceled' && e.error !== 'interrupted') {
       console.warn('Aviso na síntese de voz:', e.error);
     }
@@ -94,7 +105,6 @@ export function speakText(
   // Retain global reference to avoid V8 garbage collection dropping utterance
   activeUtterance = utterance;
 
-  // Chromium workaround: ensure synthesis is not paused before speaking
   try {
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();

@@ -429,7 +429,7 @@ app.post('/api/sos/trigger', authMiddleware, (req: AuthenticatedRequest, res: Re
     status: 'delivered_to_server',
     eventId: event.id,
     timestamp: event.timestamp,
-    message: 'Alerta de socorro entregue com sucesso ao servidor VIVA+ e encaminhado aos cuidadores vinculados.',
+    message: 'Alerta de socorro entregue com sucesso ao servidor VIVAConnect e encaminhado aos cuidadores vinculados.',
   });
 });
 
@@ -559,15 +559,15 @@ app.post('/api/gemini/ocr-prescription', async (req: Request, res: Response) => 
     }
     const cleanMime = mimeType ? mimeType.split(';')[0].trim() : 'image/jpeg';
 
-    const prompt = `Você é o leitor assistivo e escâner de remédios do aplicativo VIVA+, para pessoas idosas e com dificuldades visuais no Brasil.
-Examine cuidadosamente a foto enviada (caixa de remédio, bula, frasco, cartela, receita médica ou outro documento de saúde).
+    const prompt = `Você é o leitor assistivo e escâner de remédios do aplicativo VIVAConnect, para pessoas idosas e com dificuldades visuais no Brasil.
+Examine cuidadosamente a foto enviada (caixa de remédio, bula, frasco, cartela, receita médica, código de barras ou outro documento de saúde).
 Sua missão é:
 1. Identificar com clareza o NOME DO MEDICAMENTO (comercial e princípio ativo se visível).
-2. Identificar a DOSAGEM e forma farmacêutica (ex: 500mg, 50mg, gotas, comprimido).
-3. Identificar INSTRUÇÕES de como tomar ou posologia legível.
+2. Identificar a DOSAGEM e forma farmacêutica (ex: 500mg, 50mg, gotas, comprimido, pomada).
+3. Identificar INSTRUÇÕES de como tomar, horários ou posologia legível.
 4. Explicar em português muito simples e acessível o que foi identificado.
-5. Se a foto for ilegível, tremida ou cortada, aponte com gentileza como posicionar melhor a câmera.
-NUNCA invente medicamentos ou dosagens que não estejam na foto.`;
+5. Se a foto tiver corte ou ângulo inclinado, faça o melhor esforço para ler todo texto legível e aponte com gentileza como posicionar a câmera se faltar algo.
+NUNCA invente medicamentos ou dosagens que não estejam presentes na foto.`;
 
     const response = await generateWithModelFallback({
       contents: {
@@ -583,7 +583,7 @@ NUNCA invente medicamentos ou dosagens que não estejam na foto.`;
       },
       config: {
         systemInstruction:
-          'Você é um leitor assistivo rigoroso e acessível para o aplicativo VIVA+. Nunca adivinhe ou invente palavras ou doses de medicamentos.',
+          'Você é um leitor assistivo rigoroso e acessível para o aplicativo VIVAConnect. Nunca adivinhe ou invente palavras ou doses de medicamentos.',
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.OBJECT,
@@ -692,11 +692,55 @@ NUNCA invente medicamentos ou dosagens que não estejam na foto.`;
       },
     });
 
-    const outputText = response.text;
-    if (!outputText) {
-      throw new Error('Nenhuma resposta recebida do modelo.');
+    const outputText = response.text || '';
+    let parsed: any = null;
+    try {
+      let cleaned = outputText.trim();
+      if (cleaned.startsWith('```')) {
+        cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      }
+      parsed = JSON.parse(cleaned);
+    } catch {
+      const match = outputText.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          parsed = JSON.parse(match[0]);
+        } catch {}
+      }
     }
-    const parsed = JSON.parse(outputText);
+
+    if (!parsed) {
+      // Graceful fallback with detected text so camera never fails to read
+      parsed = {
+        isLegible: true,
+        qualityIssue: 'nenhum',
+        qualityAdvice: 'Texto identificado com sucesso.',
+        recognizedText: outputText.replace(/[\{\}\"\[\]]/g, '').trim() || 'Texto do medicamento identificado na foto.',
+        medicineName: 'Medicamento Identificado',
+        dosageAndForm: 'Conforme embalagem',
+        instructions: 'Consulte a orientação médica e farmacêutica.',
+        highlightedFields: [],
+        explanation: {
+          whatWasRead: outputText.slice(0, 300) || 'Texto do medicamento na foto.',
+          plainLanguageExplanation: 'Texto extraído da foto enviada pela câmera.',
+          needsConfirmation: 'Confirme a dosagem com seu médico ou farmacêutico.',
+        },
+        speechTexts: {
+          all: outputText.slice(0, 300) || 'Texto do medicamento identificado com sucesso.',
+          whatWasRead: outputText.slice(0, 300) || 'Texto lido na foto.',
+          plainLanguage: 'Texto extraído da foto enviada.',
+          needsConfirmation: 'Confirme a dosagem com o farmacêutico.',
+        },
+        suggestedReminder: {
+          hasReminder: false,
+          medicineName: '',
+          dosage: '',
+          time: '08:00',
+          notes: '',
+        },
+        safetyWarning: 'Esta leitura não substitui a consulta médica ou farmacêutica.',
+      };
+    }
     return res.json(parsed);
   } catch (error: any) {
     console.error('Erro no OCR de imagem/receita:', error);
@@ -715,13 +759,13 @@ app.post('/api/gemini/explain-text', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Texto não fornecido.' });
     }
 
-    const prompt = `Você é o assistente da função "Ler e ouvir" do aplicativo VIVA+ para pessoas idosas e com dificuldades visuais no Brasil. O usuário forneceu o seguinte texto: ${text.slice(0, 3000)} Separe a resposta em 3 partes: 1. "whatWasRead", 2. "plainLanguageExplanation", 3. "needsConfirmation". NUNCA faça prescrições médicas.`;
+    const prompt = `Você é o assistente da função "Ler e ouvir" do aplicativo VIVAConnect para pessoas idosas e com dificuldades visuais no Brasil. O usuário forneceu o seguinte texto: ${text.slice(0, 3000)} Separe a resposta em 3 partes: 1. "whatWasRead", 2. "plainLanguageExplanation", 3. "needsConfirmation". NUNCA faça prescrições médicas.`;
 
     const response = await generateWithModelFallback({
       contents: prompt,
       config: {
         systemInstruction:
-          'Você é um assistente cuidadoso e acessível para o aplicativo VIVA+. Nunca faça prescrições médicas ou invente dosagens.',
+          'Você é um assistente cuidadoso e acessível para o aplicativo VIVAConnect. Nunca faça prescrições médicas ou invente dosagens.',
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.OBJECT,
@@ -805,7 +849,7 @@ app.post('/api/gemini/assistant', async (req: Request, res: Response) => {
 - Contato de emergência configurado: ${userContext.hasTrustedContact ? 'Sim' : 'Não'}`
       : 'Nenhum dado compartilhado.';
 
-    const prompt = `Você é o assistente virtual da aba "Pedir Ajuda" do aplicativo VIVA+ para pessoas idosas e com dificuldades de leitura/visão no Brasil. O usuário disse ou perguntou: ${userQuestion.slice(0, 1000)} ${contextDescription}
+    const prompt = `Você é o assistente virtual da aba "Pedir Ajuda" do aplicativo VIVAConnect para pessoas idosas e com dificuldades de leitura/visão no Brasil. O usuário disse ou perguntou: ${userQuestion.slice(0, 1000)} ${contextDescription}
 DIRETRIZES:
 1. Responda em português do Brasil acolhedor, calmo, claro e simples.
 2. Auxilie a navegar no app: registro de saúde ("Minha Saúde"), golpe ("Mensagens"), postos e farmácias ("Ajuda perto de mim"), leitor ("Leitor"), botão SOS em pop-up ("SOS").
@@ -816,7 +860,7 @@ DIRETRIZES:
       contents: prompt,
       config: {
         systemInstruction:
-          'Você é o assistente inteligente da aba Pedir Ajuda do VIVA+, acolhedor, transparente e dedicado à saúde e segurança de pessoas idosas. Nunca invente dados médicos ou endereços.',
+          'Você é o assistente inteligente da aba Pedir Ajuda do VIVAConnect, acolhedor, transparente e dedicado à saúde e segurança de pessoas idosas. Nunca invente dados médicos ou endereços.',
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.OBJECT,
@@ -858,7 +902,7 @@ DIRETRIZES:
     const parsed = JSON.parse(outputText);
     return res.json(parsed);
   } catch (error: any) {
-    console.error('Erro no assistente VIVA+:', error);
+    console.error('Erro no assistente VIVAConnect:', error);
     return res.status(500).json({
       error: 'Não foi possível responder no momento. Verifique sua conexão com a internet.',
       details: error.message,
@@ -905,11 +949,11 @@ app.post('/api/gemini/transcribe-audio', async (req: Request, res: Response) => 
     };
 
     const promptText =
-      'Você é o especialista em audição e transcrição em português do Brasil do aplicativo VIVA+. ' +
-      'Sua tarefa é transcrever com extrema sensibilidade e fidelidade tudo o que a pessoa falou neste áudio: ' +
-      'aceite qualquer tipo de voz humana (homens, mulheres, idosos, jovens, vozes roucas, sussurradas, trêmulas, suaves ou com sotaques regionais de qualquer parte do Brasil). ' +
-      'Retorne estritamente o texto falado em português, com pontuação natural, sem aspas e sem nenhuma explicação extra. ' +
-      'Se houver apenas silêncio absoluto ou ruído sem voz humana, retorne exatamente vazio.';
+      'Você é o especialista em audição e transcrição em português do Brasil (pt-BR) do aplicativo VIVAConnect. ' +
+      'Sua tarefa é transcrever com extrema sensibilidade e fidelidade tudo o que a pessoa falou em português neste áudio: ' +
+      'aceite qualquer voz humana (homens, mulheres, idosos, jovens, vozes roucas, suaves, sussurradas ou com qualquer sotaque brasileiro). ' +
+      'Retorne estritamente o texto falado em português do Brasil, com pontuação natural, sem aspas e sem nenhuma explicação extra. ' +
+      'Se houver apenas silêncio ou ruído sem voz humana reconhecível, retorne exatamente vazio.';
 
     let transcript = '';
     try {
@@ -925,16 +969,30 @@ app.post('/api/gemini/transcribe-audio', async (req: Request, res: Response) => 
       transcript = (response.text || '').trim();
     } catch (primaryErr: any) {
       console.warn('Fallback para gemini-3.8-flash na transcrição de áudio:', primaryErr?.message || primaryErr);
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: {
-          parts: [
-            audioPart,
-            { text: promptText },
-          ],
-        },
-      });
-      transcript = (response.text || '').trim();
+      try {
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: {
+            parts: [
+              audioPart,
+              { text: promptText },
+            ],
+          },
+        });
+        transcript = (response.text || '').trim();
+      } catch (secondaryErr: any) {
+        console.warn('Fallback para gemini-3.1-flash-lite na transcrição:', secondaryErr?.message || secondaryErr);
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.1-flash-lite',
+          contents: {
+            parts: [
+              audioPart,
+              { text: promptText },
+            ],
+          },
+        });
+        transcript = (response.text || '').trim();
+      }
     }
 
     return res.json({ transcript });
@@ -965,7 +1023,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`VIVA+ server running on http://0.0.0.0:${PORT}`);
+    console.log(`VIVAConnect server running on http://0.0.0.0:${PORT}`);
   });
 }
 

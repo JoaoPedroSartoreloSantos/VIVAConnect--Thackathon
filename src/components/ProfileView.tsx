@@ -17,6 +17,10 @@ import {
   PlusCircle,
   X,
   PhoneCall,
+  Github,
+  Bell,
+  Pill,
+  CheckCircle2,
 } from 'lucide-react';
 import {
   AccessibilitySettings,
@@ -33,6 +37,7 @@ import {
   updateUserProfile,
 } from '../utils/storage';
 import { speakText } from '../utils/speech';
+import { testMedicationNotification } from '../utils/notifications';
 
 interface ProfileViewProps {
   currentUser: UserProfile;
@@ -271,6 +276,39 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <p className="text-xs text-slate-700 dark:text-slate-300">
                     E-mail opcional: <strong className="text-slate-900 dark:text-white">{currentUser.email}</strong>
                   </p>
+                )}
+
+                {/* GitHub Account Recognition Status */}
+                {currentUser.id.startsWith('github_') ? (
+                  <div className="mt-3 p-3 bg-slate-900 text-white rounded-2xl flex items-center justify-between gap-3 border border-slate-700">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-slate-800 flex items-center justify-center shrink-0">
+                        <Github className="w-4 h-4 text-emerald-400" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-black block">
+                          Conta GitHub Reconhecida
+                        </span>
+                        <span className="text-[11px] text-slate-300 font-mono">
+                          ID: {currentUser.id.replace('github_', '')}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-1 rounded-full shrink-0">
+                      ✓ Reconhecimento Ativo
+                    </span>
+                  </div>
+                ) : (
+                  <div className="mt-3 pt-2.5 border-t border-slate-200 dark:border-slate-700">
+                    <button
+                      type="button"
+                      onClick={onNavigateAuth}
+                      className="w-full bg-slate-900 hover:bg-black text-white font-black py-3 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition cursor-pointer"
+                    >
+                      <Github className="w-4 h-4 shrink-0 text-slate-300" />
+                      <span>Reconhecer e Vincular com Conta GitHub</span>
+                    </button>
+                  </div>
                 )}
               </div>
             ) : (

@@ -41,26 +41,34 @@ export class UniversalVoiceListener {
     this.nativeTranscript = '';
     this.audioChunks = [];
 
-    // 2. Request microphone permission via getUserMedia
+    // 2. Request microphone permission via getUserMedia with port/device fallback
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Acesso ao microfone não suportado neste navegador.');
       }
 
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: false, // Preserva vozes suaves e sussurradas
-          autoGainControl: true, // Amplifica vozes baixas de pessoas idosas
-        },
-      });
+      try {
+        this.mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: false,
+            autoGainControl: true,
+          },
+        });
+      } catch (advancedAudioErr) {
+        // Fallback for simple audio ports, USB headsets, or basic mobile devices
+        console.warn('Fallback para microfone padrão:', advancedAudioErr);
+        this.mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+      }
     } catch (err: any) {
-      console.error('Erro de permissão do microfone:', err);
+      console.error('Erro de permissão do microfone/porta de áudio:', err);
       let message = 'Permissão de microfone não concedida.';
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         message = 'Acesso ao microfone negado. Por favor, autorize o microfone nas configurações do navegador.';
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        message = 'Nenhum microfone foi encontrado conectado a este aparelho.';
+        message = 'Nenhum microfone ou porta de áudio foi encontrada conectada a este aparelho.';
       }
       if (this.options.onError) this.options.onError(message);
       if (this.options.onEnd) this.options.onEnd();

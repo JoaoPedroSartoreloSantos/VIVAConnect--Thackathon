@@ -156,7 +156,7 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
     return (
       <div
         className={`relative rounded-3xl overflow-hidden p-2 sm:p-3 flex items-center justify-center ${bgClasses} ${iconContainerSizes[size]} ${className}`}
-        aria-label="Ícone do aplicativo VIVA+"
+        aria-label="Ícone do aplicativo VIVAConnect"
       >
         <div className="w-full h-full flex items-center justify-center p-1">
           {renderAppIconSymbol()}
@@ -201,8 +201,8 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
           <span className={`font-black ${textSizes[size]} ${vivaColorClass} tracking-tight`}>
             VIVA
           </span>
-          <span className={`font-black ${textSizes[size]} ${plusColorClass} ml-0.5`}>
-            +
+          <span className={`font-black ${textSizes[size]} ${plusColorClass} tracking-tight`}>
+            Connect
           </span>
         </div>
       </div>
@@ -248,7 +248,7 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
   return (
     <div
       className={`flex flex-col items-center justify-center text-center select-none p-4 sm:p-6 ${className}`}
-      aria-label="Logo completa do VIVA+: Tecnologia que entende você. Enxergue • Entenda • Decida • Viva."
+      aria-label="Logo completa do VIVAConnect: Tecnologia que conecta e entende você. Enxergue • Entenda • Decida • Viva."
     >
       <div className="mb-2 sm:mb-3">
         {renderOriginalSymbol(fullSymbolSizes[size])}
@@ -257,12 +257,12 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
         <span className={`font-black ${fullVivaSizes[size]} ${vivaColor} tracking-tight`}>
           VIVA
         </span>
-        <span className={`font-black ${fullVivaSizes[size]} ${plusColor} ml-1`}>
-          +
+        <span className={`font-black ${fullVivaSizes[size]} ${plusColor} tracking-tight`}>
+          Connect
         </span>
       </div>
       <p className={`text-sm sm:text-base font-extrabold tracking-wide uppercase ${taglineColor} mb-2`}>
-        Tecnologia que entende você
+        Tecnologia que conecta e cuida de você
       </p>
       <p
         className={`text-xs sm:text-sm font-black tracking-normal px-3 py-1 rounded-full border ${
