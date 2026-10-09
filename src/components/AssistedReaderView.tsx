@@ -35,6 +35,7 @@ import {
 } from '../types';
 import { speakText, stopSpeaking } from '../utils/speech';
 import { UniversalVoiceListener } from '../utils/audioRecorder';
+import { compressImageForOcr } from '../utils/imageCompressor';
 
 interface AssistedReaderViewProps {
   onNavigate?: (tab: ActiveTab) => void;
@@ -192,14 +193,16 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
 
     const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
     stopCamera();
-    setSelectedImage(dataUrl);
-    setMimeType('image/jpeg');
     setResult(null);
     setErrorMsg(null);
     setPrivacyAgreed(true);
     setSubMode('menu');
-    speakText('Foto do remédio capturada. Escaneando nome, dosagem e bula com inteligência artificial...');
-    await executeProcessOCR(dataUrl, 'image/jpeg');
+    speakText('Foto do remédio capturada. Escaneando com inteligência artificial...');
+
+    const optimized = (await compressImageForOcr(dataUrl, 1600, 0.85)) || dataUrl;
+    setSelectedImage(optimized);
+    setMimeType('image/jpeg');
+    await executeProcessOCR(optimized, 'image/jpeg');
   };
 
   const handleCancelCamera = () => {
@@ -215,13 +218,15 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
     const reader = new FileReader();
     reader.onload = async () => {
       const dataUrl = reader.result as string;
-      setSelectedImage(dataUrl);
       setResult(null);
       setErrorMsg(null);
       setPrivacyAgreed(true);
       setSubMode('menu');
       speakText('Foto do remédio carregada. Escaneando e analisando com inteligência artificial...');
-      await executeProcessOCR(dataUrl, fType);
+
+      const optimized = (await compressImageForOcr(dataUrl, 1600, 0.85)) || dataUrl;
+      setSelectedImage(optimized);
+      await executeProcessOCR(optimized, 'image/jpeg');
     };
     reader.readAsDataURL(file);
   };
@@ -481,7 +486,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
             <span className="text-xs font-semibold text-slate-500">Escolha uma ação:</span>
           </div>
 
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-5 sm:gap-6">
             {/* Primary Action 1: Native Phone Camera with Auto-focus */}
             <button
               type="button"
@@ -804,7 +809,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
             Examinando a imagem...
           </h3>
           <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-            O VIVAConnect está extraindo cada palavra com cuidado sem adivinhar dosagens.
+            O VIVA+ está extraindo cada palavra com cuidado sem adivinhar dosagens.
           </p>
         </section>
       )}
@@ -869,7 +874,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
               </div>
               <p className="text-xs sm:text-sm font-medium leading-relaxed">
                 {result.qualityAdvice ||
-                  'A foto não ficou nítida o suficiente. Para sua segurança médica, o VIVAConnect nunca completa palavras ou doses por adivinhação.'}
+                  'A foto não ficou nítida o suficiente. Para sua segurança médica, o VIVA+ nunca completa palavras ou doses por adivinhação.'}
               </p>
               <button
                 type="button"
@@ -1226,7 +1231,7 @@ export const AssistedReaderView: React.FC<AssistedReaderViewProps> = ({
           </div>
 
           <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-            Digite, cole ou fale o texto que deseja que o VIVAConnect leia em voz alta ou explique:
+            Digite, cole ou fale o texto que deseja que o VIVA+ leia em voz alta ou explique:
           </p>
 
           <div>

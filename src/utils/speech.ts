@@ -1,4 +1,4 @@
-// Accessibility Audio Assistant for VIVAConnect
+// Accessibility Audio Assistant for VIVA+
 
 let activeUtterance: SpeechSynthesisUtterance | null = null;
 let cachedVoices: SpeechSynthesisVoice[] = [];
@@ -66,21 +66,42 @@ export function speakText(
   utterance.volume = 1.0;
 
   // Retrieve available voices dynamically
-  const availableVoices =
-    cachedVoices.length > 0
-      ? cachedVoices
-      : window.speechSynthesis.getVoices();
+  let availableVoices =
+    typeof window !== 'undefined' && 'speechSynthesis' in window
+      ? window.speechSynthesis.getVoices()
+      : [];
+  if ((!availableVoices || availableVoices.length === 0) && cachedVoices.length > 0) {
+    availableVoices = cachedVoices;
+  }
 
   // Explicit priority for natural Brazilian Portuguese voices
   const ptVoice =
     availableVoices.find((v) => v.lang === 'pt-BR' || v.lang === 'pt_BR' || v.lang.toLowerCase() === 'pt-br') ||
-    availableVoices.find((v) => v.lang.toLowerCase().startsWith('pt') && (v.name.toLowerCase().includes('brazil') || v.name.toLowerCase().includes('brasil'))) ||
+    availableVoices.find(
+      (v) =>
+        v.lang.toLowerCase().startsWith('pt') &&
+        (v.name.toLowerCase().includes('brazil') ||
+          v.name.toLowerCase().includes('brasil') ||
+          v.name.toLowerCase().includes('google') ||
+          v.name.toLowerCase().includes('natural'))
+    ) ||
     availableVoices.find((v) => v.lang.toLowerCase().startsWith('pt')) ||
-    availableVoices.find((v) => v.name.toLowerCase().includes('portug') || v.name.toLowerCase().includes('brasil'));
+    availableVoices.find(
+      (v) =>
+        v.name.toLowerCase().includes('portugu') ||
+        v.name.toLowerCase().includes('brasil') ||
+        v.name.toLowerCase().includes('brazil') ||
+        v.name.toLowerCase().includes('luciana') ||
+        v.name.toLowerCase().includes('felipe') ||
+        v.name.toLowerCase().includes('daniel') ||
+        v.name.toLowerCase().includes('maria') ||
+        v.name.toLowerCase().includes('raquel') ||
+        v.name.toLowerCase().includes('leticia')
+    );
 
   if (ptVoice) {
     utterance.voice = ptVoice;
-    utterance.lang = ptVoice.lang;
+    utterance.lang = ptVoice.lang || 'pt-BR';
   } else {
     utterance.lang = 'pt-BR';
   }

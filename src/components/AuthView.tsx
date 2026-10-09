@@ -121,7 +121,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
     if (!sentCode) return;
     setRevealedChannel(channel);
 
-    const messageText = `VIVAConnect: Seu código de verificação é ${sentCode}. Digite no aplicativo para concluir seu acesso com segurança.`;
+    const messageText = `VIVA+: Seu código de verificação é ${sentCode}. Digite no aplicativo para concluir seu acesso com segurança.`;
     if (channel === 'whatsapp') {
       window.open(
         `https://api.whatsapp.com/send?phone=55${sentCleanPhone}&text=${encodeURIComponent(messageText)}`,
@@ -130,7 +130,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       );
     } else {
       window.location.href = `sms:+55${sentCleanPhone}?body=${encodeURIComponent(
-        `VIVAConnect: Seu código de verificação é ${sentCode}`
+        `VIVA+: Seu código de verificação é ${sentCode}`
       )}`;
     }
 
@@ -168,7 +168,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       });
 
       setSuccessMessage(`Conta criada com sucesso! Bem-vindo(a), ${regRes.user.name}.`);
-      speakText(`Conta criada com sucesso! Bem-vindo ao VIVAConnect, ${regRes.user.name}.`);
+      speakText(`Conta criada com sucesso! Bem-vindo ao VIVA+, ${regRes.user.name}.`);
       setTimeout(() => {
         onSuccessAuth(regRes.user);
       }, 700);
@@ -229,7 +229,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
       };
 
       setSuccessMessage(`Reconhecimento GitHub realizado com sucesso! Olá, ${ghUser.name}!`);
-      speakText(`Conta GitHub reconhecida com sucesso. Bem-vindo ao VIVAConnect!`);
+      speakText(`Conta GitHub reconhecida com sucesso. Bem-vindo ao VIVA+!`);
       setTimeout(() => {
         onSuccessAuth(ghUser);
       }, 700);
@@ -250,7 +250,7 @@ export const AuthView: React.FC<AuthViewProps> = ({
           </div>
           <div>
             <h2 className="text-xl font-black text-slate-900 dark:text-white leading-tight">
-              Entrar ou Criar Conta no VIVAConnect
+              Entrar ou Criar Conta no VIVA+
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium">
               Sua conta sincroniza remédios, medições e rede de cuidado com segurança.

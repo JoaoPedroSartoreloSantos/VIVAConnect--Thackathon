@@ -138,29 +138,56 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
   );
 
   if (effectiveVariant === 'app-icon') {
-    const iconContainerSizes = {
-      sm: 'w-12 h-12',
-      md: 'w-20 h-20',
-      lg: 'w-28 h-28',
-      xl: 'w-44 h-44',
-      custom: '',
-    };
-
-    const bgClasses =
-      isDark
-        ? 'bg-slate-900 border border-slate-700/80 shadow-md'
-        : isLight
-        ? 'bg-white border border-slate-200/80 shadow-md'
-        : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md';
-
     return (
       <div
-        className={`relative rounded-3xl overflow-hidden p-2 sm:p-3 flex items-center justify-center ${bgClasses} ${iconContainerSizes[size]} ${className}`}
-        aria-label="Ícone do aplicativo VIVAConnect"
+        className={`relative w-full h-full min-w-[32px] min-h-[32px] flex items-center justify-center select-none ${className}`}
+        aria-label="Ícone oficial do aplicativo Viva+"
       >
-        <div className="w-full h-full flex items-center justify-center p-1">
-          {renderAppIconSymbol()}
-        </div>
+        <svg
+          viewBox="0 0 512 512"
+          className="w-full h-full drop-shadow-sm"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <rect width="512" height="512" rx="115" fill="#ffffff" />
+          <rect width="512" height="512" rx="115" fill="none" stroke="#cbd5e1" strokeWidth="6" />
+          <path
+            d="M 115 256 C 175 140, 337 140, 397 256"
+            stroke="#059669"
+            strokeWidth="48"
+            strokeLinecap="round"
+          />
+          <path
+            d="M 115 256 C 175 372, 337 372, 397 256"
+            stroke="#0284c7"
+            strokeWidth="48"
+            strokeLinecap="round"
+          />
+          <circle cx="256" cy="195" r="34" fill="#059669" />
+          <path
+            d="M 210 248 C 228 220, 284 220, 302 248 C 285 272, 227 272, 210 248 Z"
+            fill="#059669"
+          />
+          <g transform="translate(365, 155)">
+            <circle cx="0" cy="0" r="34" fill="#059669" />
+            <path
+              d="M -16 0 L 16 0 M 0 -16 L 0 16"
+              stroke="#ffffff"
+              strokeWidth="9"
+              strokeLinecap="round"
+            />
+          </g>
+          <circle
+            cx="290"
+            cy="300"
+            r="38"
+            stroke="#0284c7"
+            strokeWidth="18"
+            strokeLinecap="round"
+            strokeDasharray="180 60"
+          />
+        </svg>
       </div>
     );
   }
@@ -174,10 +201,10 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
       custom: '',
     };
     const textSizes = {
-      sm: 'text-lg',
-      md: 'text-xl sm:text-2xl',
-      lg: 'text-2xl sm:text-3xl',
-      xl: 'text-3xl sm:text-4xl',
+      sm: 'text-xl',
+      md: 'text-2xl sm:text-3xl',
+      lg: 'text-3xl sm:text-4xl',
+      xl: 'text-4xl sm:text-5xl',
       custom: '',
     };
 
@@ -199,10 +226,10 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
         {renderOriginalSymbol(symbolSizes[size])}
         <div className="flex items-center tracking-tight leading-none">
           <span className={`font-black ${textSizes[size]} ${vivaColorClass} tracking-tight`}>
-            VIVA
+            Viva
           </span>
-          <span className={`font-black ${textSizes[size]} ${plusColorClass} tracking-tight`}>
-            Connect
+          <span className={`font-black ${textSizes[size]} ${plusColorClass} tracking-tight ml-0.5`}>
+            +
           </span>
         </div>
       </div>
@@ -217,10 +244,10 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
     custom: '',
   };
   const fullVivaSizes = {
-    sm: 'text-2xl',
-    md: 'text-3xl sm:text-4xl',
-    lg: 'text-4xl sm:text-5xl',
-    xl: 'text-5xl sm:text-6xl',
+    sm: 'text-3xl',
+    md: 'text-4xl sm:text-5xl',
+    lg: 'text-5xl sm:text-6xl',
+    xl: 'text-6xl sm:text-7xl',
     custom: '',
   };
 
@@ -248,21 +275,21 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
   return (
     <div
       className={`flex flex-col items-center justify-center text-center select-none p-4 sm:p-6 ${className}`}
-      aria-label="Logo completa do VIVAConnect: Tecnologia que conecta e entende você. Enxergue • Entenda • Decida • Viva."
+      aria-label="Logo completa do Viva+: Tecnologia que entende você. Enxergue • Entenda • Decida • Viva."
     >
       <div className="mb-2 sm:mb-3">
         {renderOriginalSymbol(fullSymbolSizes[size])}
       </div>
       <div className="flex items-center justify-center tracking-tight leading-none mb-2">
         <span className={`font-black ${fullVivaSizes[size]} ${vivaColor} tracking-tight`}>
-          VIVA
+          Viva
         </span>
-        <span className={`font-black ${fullVivaSizes[size]} ${plusColor} tracking-tight`}>
-          Connect
+        <span className={`font-black ${fullVivaSizes[size]} ${plusColor} tracking-tight ml-1`}>
+          +
         </span>
       </div>
       <p className={`text-sm sm:text-base font-extrabold tracking-wide uppercase ${taglineColor} mb-2`}>
-        Tecnologia que conecta e cuida de você
+        Tecnologia que entende você
       </p>
       <p
         className={`text-xs sm:text-sm font-black tracking-normal px-3 py-1 rounded-full border ${

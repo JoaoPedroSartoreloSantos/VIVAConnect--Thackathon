@@ -21,7 +21,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5 text-sky-600" />
               <h3 className="text-base font-black text-slate-900 dark:text-white">
-                Sobre o Projeto VIVAConnect
+                Sobre o Projeto VIVA+
               </h3>
             </div>
             <button
@@ -65,7 +65,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
                 Proposta de Valor e Acessibilidade
               </h4>
               <p>
-                O <strong>VIVAConnect</strong> foi desenvolvido especialmente para idosos e pessoas com dificuldades visuais, motoras ou de leitura. Seu lema é <em>“Enxergue. Entenda. Decida. Viva.”</em>, combinando tecnologia assistiva (alto contraste, aumento de fonte, leitura em voz alta, botão de SOS com acionamento em pop-up rápido e transparente) e inteligência artificial para autonomia e segurança no dia a dia.
+                O <strong>VIVA+</strong> foi desenvolvido especialmente para idosos e pessoas com dificuldades visuais, motoras ou de leitura. Seu lema é <em>“Enxergue. Entenda. Decida. Viva.”</em>, combinando tecnologia assistiva (alto contraste, aumento de fonte, leitura em voz alta, botão de SOS com acionamento em pop-up rápido e transparente) e inteligência artificial para autonomia e segurança no dia a dia.
               </p>
             </div>
 
@@ -84,7 +84,7 @@ export const AboutModal: React.FC<AboutModalProps> = ({ isOpen, onClose }) => {
             <div className="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-2xl border border-amber-200 dark:border-amber-800">
               <h4 className="font-extrabold text-amber-900 dark:text-amber-200 mb-1 flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-amber-600" />
-                Diferenciais VIVAConnect
+                Diferenciais VIVA+
               </h4>
               <ul className="space-y-1 mt-1 list-disc list-inside">
                 <li>Botão SOS disponível como pop-up flutuante permanente na tela e nos cabeçalhos, com confirmação anti-discagem acidental.</li>

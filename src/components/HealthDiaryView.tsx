@@ -154,7 +154,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
   };
 
   const generateDoctorSummary = () => {
-    let summary = `*RELATÓRIO DO DIÁRIO DE SAÚDE - VIVACONNECT*\n`;
+    let summary = `*RELATÓRIO DO DIÁRIO DE SAÚDE - VIVA+*\n`;
     summary += `Gerado em: ${new Date().toLocaleDateString('pt-BR')}\n\n`;
     summary += `--- MEDIÇÕES REGISTRADAS ---\n`;
     if (logs.length === 0) {
@@ -186,7 +186,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
       });
     }
 
-    summary += `\n*Aviso*: Dados informados voluntariamente pelo paciente. O VIVAConnect não substitui avaliação clínica médica.`;
+    summary += `\n*Aviso*: Dados informados voluntariamente pelo paciente. O VIVA+ não substitui avaliação clínica médica.`;
     return summary;
   };
 
@@ -239,7 +239,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
           <div className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-start gap-2 text-xs text-slate-700 dark:text-slate-300">
             <AlertCircle className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
             <span>
-              <strong>Atenção médica:</strong> O VIVAConnect não faz diagnósticos e nunca altera suas doses. Consulte sempre sua equipe de saúde.
+              <strong>Atenção médica:</strong> O VIVA+ não faz diagnósticos e nunca altera suas doses. Consulte sempre sua equipe de saúde.
             </span>
           </div>
           <div className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
@@ -843,7 +843,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              O VIVAConnect avisa no horário exato com som, voz acessível e notificação do aparelho quando for o momento de tomar cada remédio.
+              O VIVA+ avisa no horário exato com som, voz acessível e notificação do aparelho quando for o momento de tomar cada remédio.
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
               {getNotificationPermission() !== 'granted' && isNotificationSupported() && (
@@ -866,7 +866,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
                 onClick={async () => {
                   const res = await testMedicationNotification();
                   if (!res.permissionGranted) {
-                    alert(res.message);
+                    speakText(res.message);
                   }
                 }}
                 className="bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-emerald-800 dark:text-emerald-300 font-black py-3 px-4 rounded-xl text-xs sm:text-sm border border-emerald-300 dark:border-emerald-700 flex items-center gap-2 transition cursor-pointer shadow-sm"

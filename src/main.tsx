@@ -8,7 +8,7 @@ if ('serviceWorker' in navigator && process.env.NODE_ENV !== 'test') {
     navigator.serviceWorker
       .register('/sw.js')
       .then((reg) => {
-        console.log('VIVAConnect Service Worker ativo:', reg.scope);
+        console.log('VIVA+ Service Worker ativo:', reg.scope);
       })
       .catch((err) => {
         console.warn('Erro ao registrar Service Worker:', err);

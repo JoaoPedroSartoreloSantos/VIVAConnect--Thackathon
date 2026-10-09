@@ -87,20 +87,25 @@ export default function App() {
 
   // Interval ticker: check medication schedule every 15 seconds
   useEffect(() => {
+    const normalizeTime = (rawTime: string) => {
+      const parts = rawTime.trim().split(':');
+      if (parts.length >= 2) {
+        return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+      }
+      return rawTime.trim();
+    };
+
     const checkSchedules = () => {
       if (medications.length === 0) return;
       const now = new Date();
-      const currentHoursMinutes = now.toLocaleTimeString('pt-BR', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-      const todayDate = now.toISOString().split('T')[0];
+      const currentHoursMinutes = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const todayDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
       medications.forEach((med) => {
         const allTimes = new Set<string>();
-        if (med.time) allTimes.add(med.time.trim());
+        if (med.time) allTimes.add(normalizeTime(med.time));
         if (Array.isArray(med.schedules)) {
-          med.schedules.forEach((t) => allTimes.add(t.trim()));
+          med.schedules.forEach((t) => allTimes.add(normalizeTime(t)));
         }
 
         allTimes.forEach((scheduledTime) => {
@@ -124,7 +129,7 @@ export default function App() {
     };
 
     checkSchedules();
-    const intervalId = setInterval(checkSchedules, 15000);
+    const intervalId = setInterval(checkSchedules, 10000);
     return () => clearInterval(intervalId);
   }, [medications]);
 

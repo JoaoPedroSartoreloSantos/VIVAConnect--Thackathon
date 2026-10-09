@@ -1,9 +1,9 @@
 /**
- * Service Worker for VIVAConnect
+ * Service Worker for VIVA+
  * Handles Offline Caching, Background Medication Notifications and PWA Installability
  */
 
-const CACHE_NAME = 'vivaconnect-cache-v1';
+const CACHE_NAME = 'vivaplus-cache-v1';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
@@ -74,7 +74,7 @@ self.addEventListener('fetch', (event) => {
 
 // Handle push notifications
 self.addEventListener('push', (event) => {
-  let data = { title: '⏰ Lembrete de Remédio - VIVAConnect', body: 'Está no horário do seu medicamento.' };
+  let data = { title: '⏰ Lembrete de Remédio - VIVA+', body: 'Está no horário do seu medicamento.' };
   if (event.data) {
     try {
       data = event.data.json();
@@ -89,7 +89,7 @@ self.addEventListener('push', (event) => {
     badge: '/icon-192.png',
     vibrate: [200, 100, 200, 100, 200],
     data: data.url || '/',
-    tag: data.tag || 'vivaconnect-med-reminder',
+    tag: data.tag || 'vivaplus-med-reminder',
     renotify: true,
     requireInteraction: true,
   };

@@ -94,7 +94,7 @@ export function sendMedicationNotification(
             body,
             icon: '/icon-192.png',
             badge: '/icon-192.png',
-            tag: `vivaconnect-med-${med.id}-${scheduleTime}`,
+            tag: `vivaplus-med-${med.id}-${scheduleTime}`,
             renotify: true,
             requireInteraction: true,
             // Vibration pattern for mobile phones (buzz - pause - buzz)
@@ -107,7 +107,7 @@ export function sendMedicationNotification(
               body,
               icon: '/icon-192.png',
               badge: '/icon-192.png',
-              tag: `vivaconnect-med-${med.id}-${scheduleTime}`,
+              tag: `vivaplus-med-${med.id}-${scheduleTime}`,
               requireInteraction: true,
             });
             notification.onclick = () => {
@@ -124,7 +124,7 @@ export function sendMedicationNotification(
           body,
           icon: '/icon-192.png',
           badge: '/icon-192.png',
-          tag: `vivaconnect-med-${med.id}-${scheduleTime}`,
+          tag: `vivaplus-med-${med.id}-${scheduleTime}`,
           requireInteraction: true,
         });
         notification.onclick = () => {
@@ -149,11 +149,11 @@ export async function testMedicationNotification(): Promise<{
 
   // Play audio chime and voice
   playReminderChime();
-  speakText('Notificação de teste do VIVAConnect. Os avisos de remédio avisarão no horário com som e mensagem no seu aparelho.');
+  speakText('Notificação de teste do VIVA+. Os avisos de remédio avisarão no horário com som e mensagem no seu aparelho.');
 
   if (granted && isNotificationSupported()) {
     const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    const title = '⏰ Teste de Lembrete: VIVAConnect';
+    const title = '⏰ Teste de Lembrete: VIVA+';
     const body = `Notificações ativas no seu aparelho às ${nowTime}! Seus remédios avisarão pontualmente com som e alerta.`;
 
     if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
@@ -163,7 +163,7 @@ export async function testMedicationNotification(): Promise<{
             body,
             icon: '/icon-192.png',
             badge: '/icon-192.png',
-            tag: 'vivaconnect-test-notification',
+            tag: 'vivaplus-test-notification',
             vibrate: [250, 100, 250],
             requireInteraction: true,
           } as any);
