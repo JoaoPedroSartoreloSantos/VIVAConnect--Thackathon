@@ -2,10 +2,20 @@ import React from 'react';
 import { Home, HeartPulse, ScanText, MapPin, MessageSquareHeart } from 'lucide-react';
 import { ActiveTab } from '../types';
 
+import { speakText } from '../utils/speech';
+
 interface BottomNavProps {
   currentTab: ActiveTab;
   onSelectTab: (tab: ActiveTab) => void;
 }
+
+const TAB_DESCRIPTIONS: Record<string, string> = {
+  home: 'Aba Início: tela principal com atalhos e avisos.',
+  reader: 'Aba Ler e Ouvir: use a câmera para ler receitas e bulas com voz em alto som.',
+  health: 'Aba Minha Saúde: acompanhe remédios, doses e histórico medido de pressão e glicose.',
+  places: 'Aba Ajuda Perto: encontre postos de saúde, UPAs e farmácias perto de você no Brasil.',
+  assistant: 'Aba Pedir Ajuda: fale no microfone para tirar dúvidas de saúde com calma.',
+};
 
 export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab }) => {
   const tabs = [
@@ -50,8 +60,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
           return (
             <button
               key={tab.id}
-              onClick={() => onSelectTab(tab.id)}
-              className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition font-bold text-xs min-h-[56px] ${
+              onClick={() => {
+                speakText(TAB_DESCRIPTIONS[tab.id] || `Aba ${tab.label}`);
+                onSelectTab(tab.id);
+              }}
+              className={`flex flex-col items-center justify-center py-2 px-1 rounded-2xl transition font-bold text-xs min-h-[56px] cursor-pointer ${
                 isActive
                   ? 'nav-active bg-sky-100 dark:bg-sky-950 text-sky-900 dark:text-sky-300 ring-2 ring-sky-500 shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'

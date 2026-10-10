@@ -38,7 +38,6 @@ import { AskVivaView } from './components/AskVivaView';
 import { AuthView } from './components/AuthView';
 import { ProfileView } from './components/ProfileView';
 import { CaregiverNetworkView } from './components/CaregiverNetworkView';
-import { PWAInstallBanner } from './components/PWAInstallBanner';
 import { OfflineBanner } from './components/OfflineBanner';
 import { AboutModal } from './components/AboutModal';
 import { RecordHealthMeasurementModal } from './components/RecordHealthMeasurementModal';
@@ -48,7 +47,7 @@ import {
   requestNotificationPermission,
   isNotificationSupported,
 } from './utils/notifications';
-import { speakText } from './utils/speech';
+import { speakText, setupGlobalFunctionSpeech } from './utils/speech';
 
 export default function App() {
   const [settings, setSettings] = useState<AccessibilitySettings>(getSettings);
@@ -137,6 +136,12 @@ export default function App() {
     setHealthPreset(preset);
     setIsRecordHealthModalOpen(true);
   };
+
+  // Universal interactive speech assistant: reads and explains functions on click
+  useEffect(() => {
+    const cleanupSpeech = setupGlobalFunctionSpeech();
+    return cleanupSpeech;
+  }, []);
 
   // Synchronize CSS class and CSS variables on mount & settings change
   useEffect(() => {
@@ -241,7 +246,7 @@ export default function App() {
 
   // Screen audio descriptions for accessibility "Ouvir" button in Header
   const screenDescriptions: Record<ActiveTab, string> = {
-    home: `Tela inicial do VIVA Plus, tecnologia que entende você. Cuide da sua rotina, entenda informações e encontre ajuda quando precisar. Você pode acessar Minha Saúde, Verificar Mensagem, Ajuda Perto de Mim ou Falar com o VIVA Plus.`,
+    home: `Tela inicial do VIVA+. Cuide da sua rotina, entenda informações e encontre ajuda quando precisar. Você pode acessar Minha Saúde, Verificar Mensagem, Ajuda Perto de Mim ou Falar com o VIVA+.`,
     scam: `Tela de verificação de mensagens suspeitas. Cole o texto ou link recebido no WhatsApp ou SMS para analisar possíveis sinais de golpe com inteligência artificial, com total segurança.`,
     health: `Tela do diário de saúde. Registre sua pressão arterial, glicemia e remédios para acompanhar sua rotina e gerar um resumo para mostrar ao seu médico.`,
     places: `Tela de ajuda perto de você. Encontre postos de saúde, unidades de pronto atendimento, farmácias com orientação sobre a Farmácia Popular e telefones do SAMU 192 e Bombeiros 193.`,
@@ -273,9 +278,6 @@ export default function App() {
       <main className="flex-1 max-w-2xl w-full mx-auto p-3 sm:p-4 pb-36 sm:pb-40">
         {/* Offline Banner indicator */}
         <OfflineBanner />
-
-        {/* PWA Install Invitation Banner */}
-        <PWAInstallBanner />
 
         {/* Tab views */}
         {currentTab === 'home' && (

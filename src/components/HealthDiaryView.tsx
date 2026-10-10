@@ -224,7 +224,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
           <button
             onClick={() =>
               speakText(
-                'Tela Minha Saúde. Você pode registrar sua pressão pelos atalhos rápidos ou valores personalizados, acompanhar o diabetes e gerenciar seus remédios.'
+                'Tela Minha Saúde. Registre os valores realmente obtidos no seu aparelho de pressão e glicose, com data e horário, e acompanhe seus remédios.'
               )
             }
             className="p-2 text-sky-600 hover:text-sky-800 rounded-xl"
@@ -245,7 +245,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
           <div className="px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800 text-[11px] text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
             <span>
-              Seus registros são salvos com segurança na memória deste aparelho e continuam disponíveis ao fechar e reabrir.
+              Registros guardados na memória local deste aparelho para sua consulta. Importante: meça sempre com aparelho próprio de saúde.
             </span>
           </div>
         </div>
@@ -368,159 +368,36 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({
       {/* SUB-TAB 1: MEDIÇÕES */}
       {activeSubTab === 'records' && (
         <section className="space-y-4">
-          {/* Card de Atalhos Rápidos Comuns da Pressão - SEMPRE VISÍVEL */}
+          {/* Orientação Clínica: Apenas Medições Reais (Sem Atalhos Fictícios) */}
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 shadow-sm border-2 border-emerald-400 dark:border-emerald-700 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <HeartPulse className="w-5 h-5 text-emerald-600" />
                 <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  Atalhos Rápidos Comuns da Pressão
+                  Registro de Medição Real do Aparelho
                 </h3>
               </div>
-              <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                Toque para preencher
+              <span className="text-xs font-bold text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950 px-2.5 py-1 rounded-xl border border-sky-200 dark:border-sky-800">
+                PCDT Ministério da Saúde 2025
               </span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-              Escolha um dos valores comuns abaixo para preencher ou salvar sua pressão rapidamente:
+            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+              <strong>Importante:</strong> Registre apenas valores obtidos no seu próprio aparelho de medição (tensiômetro de braço ou glicosímetro), com data e horário. O celular não afere pressão e atalhos sem medição prévia não devem ser utilizados.
             </p>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setSystolic('110');
-                  setDiastolic('70');
-                  setIsAddingLog(true);
-                  speakText('Pressão 11 por 7 selecionada (110 por 70 mmHg, pressão ótima).');
-                }}
-                className={`btn-contrast-solid p-3 rounded-2xl border-2 text-left transition flex flex-col ${
-                  systolic === '110' && diastolic === '70'
-                    ? 'border-emerald-600 bg-emerald-100 dark:bg-emerald-950 font-black ring-2 ring-emerald-500'
-                    : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-emerald-500 hover:bg-emerald-50/50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-black text-slate-900 dark:text-white">11 por 7</span>
-                  <span className="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-emerald-200">Ótima</span>
-                </div>
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400 mt-0.5">110 / 70 mmHg</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSystolic('120');
-                  setDiastolic('80');
-                  setIsAddingLog(true);
-                  speakText('Pressão 12 por 8 selecionada (120 por 80 mmHg, padrão normal).');
-                }}
-                className={`btn-contrast-solid p-3 rounded-2xl border-2 text-left transition flex flex-col ${
-                  systolic === '120' && diastolic === '80'
-                    ? 'border-emerald-600 bg-emerald-100 dark:bg-emerald-950 font-black ring-2 ring-emerald-500'
-                    : 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-950/40 hover:border-emerald-500 hover:bg-emerald-50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-black text-emerald-800 dark:text-emerald-300">12 por 8 ⭐</span>
-                  <span className="text-[10px] font-black uppercase text-emerald-700 dark:text-emerald-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-emerald-200">Padrão</span>
-                </div>
-                <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-0.5">120 / 80 mmHg</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSystolic('130');
-                  setDiastolic('80');
-                  setIsAddingLog(true);
-                  speakText('Pressão 13 por 8 selecionada (130 por 80 mmHg, nível de atenção).');
-                }}
-                className={`btn-contrast-solid p-3 rounded-2xl border-2 text-left transition flex flex-col ${
-                  systolic === '130' && diastolic === '80'
-                    ? 'border-amber-600 bg-amber-100 dark:bg-amber-950 font-black ring-2 ring-amber-500'
-                    : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-amber-500 hover:bg-amber-50/50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-black text-slate-900 dark:text-white">13 por 8</span>
-                  <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-amber-200">Atenção</span>
-                </div>
-                <span className="text-xs font-bold text-amber-700 dark:text-amber-400 mt-0.5">130 / 80 mmHg</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSystolic('140');
-                  setDiastolic('90');
-                  setIsAddingLog(true);
-                  speakText('Pressão 14 por 9 selecionada (140 por 90 mmHg, hipertensão leve).');
-                }}
-                className={`btn-contrast-solid p-3 rounded-2xl border-2 text-left transition flex flex-col ${
-                  systolic === '140' && diastolic === '90'
-                    ? 'border-orange-600 bg-orange-100 dark:bg-orange-950 font-black ring-2 ring-orange-500'
-                    : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-orange-500 hover:bg-orange-50/50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-black text-orange-900 dark:text-orange-300">14 por 9</span>
-                  <span className="text-[10px] font-black uppercase text-orange-700 dark:text-orange-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-orange-200">Alta</span>
-                </div>
-                <span className="text-xs font-bold text-orange-700 dark:text-orange-400 mt-0.5">140 / 90 mmHg</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSystolic('150');
-                  setDiastolic('90');
-                  setIsAddingLog(true);
-                  speakText('Pressão 15 por 9 selecionada (150 por 90 mmHg, hipertensão estágio 2).');
-                }}
-                className={`btn-contrast-solid p-3 rounded-2xl border-2 text-left transition flex flex-col ${
-                  systolic === '150' && diastolic === '90'
-                    ? 'border-red-600 bg-red-100 dark:bg-red-950 font-black ring-2 ring-red-500'
-                    : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-red-500 hover:bg-red-50/50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-black text-red-900 dark:text-red-300">15 por 9</span>
-                  <span className="text-[10px] font-black uppercase text-red-700 dark:text-red-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-red-200">Alta</span>
-                </div>
-                <span className="text-xs font-bold text-red-700 dark:text-red-400 mt-0.5">150 / 90 mmHg</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setSystolic('160');
-                  setDiastolic('100');
-                  setIsAddingLog(true);
-                  speakText('Pressão 16 por 10 selecionada (160 por 100 mmHg, hipertensão moderada a alta).');
-                }}
-                className={`btn-contrast-solid p-3 rounded-2xl border-2 text-left transition flex flex-col ${
-                  systolic === '160' && diastolic === '100'
-                    ? 'border-red-700 bg-red-200 dark:bg-red-950 font-black ring-2 ring-red-600'
-                    : 'border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:border-red-600 hover:bg-red-50/50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-black text-red-900 dark:text-red-300">16 por 10</span>
-                  <span className="text-[10px] font-black uppercase text-red-800 dark:text-red-300 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded-md border border-red-300">Elevada</span>
-                </div>
-                <span className="text-xs font-bold text-red-800 dark:text-red-400 mt-0.5">160 / 100 mmHg</span>
-              </button>
-            </div>
           </div>
 
           {!isAddingLog ? (
             <button
-              onClick={() => setIsAddingLog(true)}
+              onClick={() => {
+                setSystolic('');
+                setDiastolic('');
+                setIsAddingLog(true);
+                speakText('Abrindo formulário para anotar medição real do aparelho.');
+              }}
               className="btn-contrast-solid w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 px-4 rounded-3xl shadow-md flex items-center justify-center gap-2.5 text-base transition active:scale-95"
             >
               <PlusCircle className="w-5 h-5" />
-              <span>Anotar Outro Valor ou Diabetes (Glicemia)</span>
+              <span>Anotar Medição Realizada no Aparelho</span>
             </button>
           ) : (
             <form

@@ -303,7 +303,7 @@ Registra valores obtidos em aparelhos próprios de medição (o celular não med
                   <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 font-medium">
                     Equivalentes a 7,3% da população com dois anos ou mais com alguma deficiência.
                   </p>
-                  <span className="text-[10px] text-slate-500 block mt-2">Fonte: IBGE, Amostra 2022</span>
+                  <span className="text-[10px] text-slate-500 font-bold block mt-2">Fonte: IBGE, Censo 2022</span>
                 </div>
               </div>
 
@@ -332,8 +332,8 @@ Registra valores obtidos em aparelhos próprios de medição (o celular não med
                   comunicação e a cognição. Esse dado fundamenta a importância global do tema, mas não é
                   uma estimativa direta de usuários do VIVA+.
                 </p>
-                <span className="text-[10px] text-slate-500 block mt-2">
-                  Fonte: OMS e UNICEF, Relatório Mundial de Tecnologia Assistiva 2022
+                <span className="text-[10px] text-slate-500 font-bold block mt-2">
+                  Fonte: OMS e UNICEF, 2022
                 </span>
               </div>
             </div>

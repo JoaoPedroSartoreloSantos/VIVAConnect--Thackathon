@@ -275,7 +275,7 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
   return (
     <div
       className={`flex flex-col items-center justify-center text-center select-none p-4 sm:p-6 ${className}`}
-      aria-label="Logo completa do Viva+: Tecnologia que entende você. Enxergue • Entenda • Decida • Viva."
+      aria-label="Logo completa do Viva+: Tecnologia Assistiva e Saúde. Enxergue • Entenda • Decida • Viva."
     >
       <div className="mb-2 sm:mb-3">
         {renderOriginalSymbol(fullSymbolSizes[size])}
@@ -289,7 +289,7 @@ export const VivaLogo: React.FC<VivaLogoProps> = ({
         </span>
       </div>
       <p className={`text-sm sm:text-base font-extrabold tracking-wide uppercase ${taglineColor} mb-2`}>
-        Tecnologia que entende você
+        Tecnologia Assistiva e Saúde
       </p>
       <p
         className={`text-xs sm:text-sm font-black tracking-normal px-3 py-1 rounded-full border ${

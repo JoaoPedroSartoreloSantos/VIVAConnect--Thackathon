@@ -19,6 +19,15 @@
       "createdAt": "2026-10-05T02:43:29.631Z",
       "expiresAt": "2026-10-05T02:53:29.631Z",
       "attempts": 0
+    },
+    {
+      "phone": "43999999999",
+      "cleanPhone": "43999999999",
+      "codeHash": "85f32d1f4462f5c2b2ef19a1e6f2d8651596da648f3bb7f675b2f49a3ec60d2c9851799ba9fe9914b64c0e877d4086eaeee0297ddbd401dce85aa25b355793a9",
+      "salt": "b5dd1f9fdda9eafd4ad450057f5bdff8",
+      "createdAt": "2026-10-10T18:52:34.446Z",
+      "expiresAt": "2026-10-10T19:02:34.446Z",
+      "attempts": 0
     }
   ],
   "healthLogs": [],

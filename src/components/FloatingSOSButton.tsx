@@ -1,5 +1,6 @@
 import React from 'react';
 import { PhoneCall } from 'lucide-react';
+import { speakText } from '../utils/speech';
 
 interface FloatingSOSButtonProps {
   onTriggerSOS: () => void;
@@ -18,7 +19,10 @@ export const FloatingSOSButton: React.FC<FloatingSOSButtonProps> = ({ onTriggerS
       {/* Botão de SOS como pop-up flutuante na tela */}
       <button
         type="button"
-        onClick={onTriggerSOS}
+        onClick={() => {
+          speakText('Acionando botão SOS de Emergência. Abrindo opções rápidas do SAMU 192 e contato de confiança.');
+          onTriggerSOS();
+        }}
         className="btn-sos-real group relative bg-red-600 hover:bg-red-700 active:scale-90 text-white font-black px-4 py-3 sm:px-5 sm:py-3.5 rounded-full shadow-[0_10px_30px_rgba(220,38,38,0.5)] border-2 border-white dark:border-red-300 flex items-center gap-2 transition-all cursor-pointer focus:outline-none focus:ring-4 focus:ring-red-400 animate-in zoom-in-75 duration-200"
         aria-label="Acionar botão de emergência SOS"
         title="Emergência SOS"

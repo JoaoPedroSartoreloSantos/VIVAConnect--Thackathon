@@ -15,7 +15,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { NearbyPlace, PlaceCategory } from '../types';
-import { getPlaces } from '../utils/placesService';
+import { getPlaces, reverseGeocode } from '../utils/placesService';
 import { speakText } from '../utils/speech';
 
 export const NearMeView: React.FC = () => {
@@ -42,17 +42,17 @@ export const NearMeView: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
-    if (navigator.permissions && navigator.permissions.query) {
-      navigator.permissions
-        .query({ name: 'geolocation' as PermissionName })
-        .then((result) => {
-          if (result.state === 'granted') {
-            executeGeolocationFetch();
-          }
-        })
-        .catch(() => {});
+    // Verificar se o usuário já definiu uma cidade preferida anteriormente (ex: Rolândia, PR)
+    const savedCity = localStorage.getItem('vivaplus_user_saved_city');
+    if (savedCity) {
+      setSearchQuery(savedCity);
+      loadPlaces(undefined, undefined, savedCity, selectedCategory);
+    } else {
+      // 1. Carregar lista imediatamente
+      loadPlaces();
+      // 2. Tentar GPS do aparelho
+      executeGeolocationFetch(true);
     }
-    loadPlaces(undefined, undefined, '', 'all');
   }, []);
 
   const loadPlaces = async (
@@ -73,6 +73,15 @@ export const NearMeView: React.FC = () => {
       setPlaces(res.places);
       setLocationName(res.resolvedLocationName || null);
       setPlacesSource(res.sourceDescription);
+
+      // Se foi feita uma busca por cidade ou endereço e encontramos locais, atualiza as coordenadas de referência
+      if (res.places.length > 0 && res.places[0].lat && res.places[0].lng) {
+        setGpsCoords({
+          lat: res.places[0].lat,
+          lng: res.places[0].lng,
+          accuracy: 50,
+        });
+      }
     } catch (err) {
       console.error('Erro ao carregar locais:', err);
     } finally {
@@ -80,34 +89,44 @@ export const NearMeView: React.FC = () => {
     }
   };
 
-  const handlePrimaryFindHelpClick = async () => {
-    if (navigator.permissions && navigator.permissions.query) {
-      try {
-        const perm = await navigator.permissions.query({ name: 'geolocation' as PermissionName });
-        if (perm.state === 'granted') {
-          executeGeolocationFetch();
-          return;
-        }
-      } catch {}
-    }
-
-    const hasSeenExplainer = localStorage.getItem('vivaplus_seen_loc_explainer') === 'true';
-    if (!hasSeenExplainer) {
-      setShowLocationExplainer(true);
-      speakText(
-        'Para mostrar locais próximos, o VIVA+ precisa usar a localização deste aparelho. Toque em Autorizar e usar localização ou escolha digitar cidade ou endereço.'
-      );
-    } else {
-      executeGeolocationFetch();
-    }
+  const handlePrimaryFindHelpClick = () => {
+    executeGeolocationFetch(false);
   };
 
-  const executeGeolocationFetch = () => {
+  const popularBrazilianCities = [
+    'Rolândia, PR',
+    'Londrina, PR',
+    'Curitiba, PR',
+    'São Paulo, SP',
+    'Rio de Janeiro, RJ',
+    'Brasília, DF',
+    'Belo Horizonte, MG',
+    'Salvador, BA',
+    'Porto Alegre, RS',
+    'Fortaleza, CE',
+    'Recife, PE',
+    'Goiânia, GO',
+    'Florianópolis, SC',
+    'Manaus, AM',
+    'Belém, PA',
+  ];
+
+  const handleSelectQuickCity = (city: string) => {
+    setSearchQuery(city);
+    speakText(`Buscando postos de saúde, UPAs e farmácias em ${city}.`);
+    localStorage.setItem('vivaplus_user_saved_city', city);
+    loadPlaces(undefined, undefined, city, selectedCategory);
+  };
+
+  const executeGeolocationFetch = (silentOnStart = false) => {
     setShowLocationExplainer(false);
     localStorage.setItem('vivaplus_seen_loc_explainer', 'true');
 
     if (!navigator.geolocation) {
-      setGpsError('Este aparelho ou navegador não possui suporte a GPS. Por favor, use a opção de digitar cidade ou endereço abaixo.');
+      setGpsError(
+        'Este aparelho ou navegador não possui suporte a GPS. Por favor, escolha sua cidade nos botões rápidos ou digite abaixo.'
+      );
+      loadPlaces(undefined, undefined, searchQuery, selectedCategory);
       return;
     }
 
@@ -115,8 +134,12 @@ export const NearMeView: React.FC = () => {
     setGpsError(null);
     setIsGpsInaccurate(false);
 
+    if (!silentOnStart) {
+      speakText('Consultando o GPS do seu aparelho para encontrar locais próximos em todo o Brasil.');
+    }
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         const accuracy = pos.coords.accuracy;
@@ -127,23 +150,34 @@ export const NearMeView: React.FC = () => {
           setIsGpsInaccurate(true);
         }
 
-        speakText('Localização identificada. Carregando unidades de saúde e farmácias próximas.');
+        // Reverse-geocode to get the city/neighborhood in Brazil
+        const rev = await reverseGeocode(lat, lng);
+        const resolved = rev?.displayName || 'Sua localização atual no Brasil';
+        setLocationName(resolved);
+
+        const announcement = `Localização identificada: ${
+          rev?.city || rev?.displayName || 'sua região'
+        }. Carregando unidades de saúde e farmácias mais próximas.`;
+        speakText(announcement);
         loadPlaces(lat, lng, searchQuery, selectedCategory);
       },
       (err) => {
         setIsLocating(false);
         let msg = 'Não foi possível obter sua localização no momento.';
         if (err.code === err.PERMISSION_DENIED) {
-          msg = 'Permissão de localização não concedida. Você pode digitar sua cidade ou endereço abaixo.';
+          msg = 'Permissão de localização não concedida. Você pode escolher sua cidade nos botões rápidos ou digitar abaixo.';
         } else if (err.code === err.POSITION_UNAVAILABLE) {
-          msg = 'Sinal de GPS indisponível no momento. Você pode digitar sua cidade ou bairro abaixo.';
+          msg = 'Sinal de GPS indisponível no momento. Escolha sua cidade nos botões rápidos ou digite abaixo.';
         } else if (err.code === err.TIMEOUT) {
-          msg = 'Tempo limite de espera do GPS esgotado. Tente novamente ou digite sua cidade abaixo.';
+          msg = 'Tempo limite de espera do GPS esgotado. Escolha sua cidade nos botões rápidos ou tente novamente.';
         }
         setGpsError(msg);
-        speakText(msg);
+        if (!silentOnStart) {
+          speakText(msg);
+        }
+        loadPlaces(undefined, undefined, searchQuery, selectedCategory);
       },
-      { timeout: 12000, enableHighAccuracy: true, maximumAge: 60000 }
+      { timeout: 10000, enableHighAccuracy: true, maximumAge: 30000 }
     );
   };
 
@@ -159,6 +193,15 @@ export const NearMeView: React.FC = () => {
 
   const handleSelectCategory = (cat: PlaceCategory | 'phones') => {
     setSelectedCategory(cat);
+    const catLabels: Record<string, string> = {
+      all: 'Mostrando todos os locais de saúde e farmácias.',
+      ubs: 'Filtrando apenas Unidades Básicas de Saúde (UBS).',
+      upa: 'Filtrando Unidades de Pronto Atendimento 24 Horas.',
+      hospital: 'Filtrando Hospitais Gerais e de Emergência.',
+      pharmacy: 'Filtrando Farmácias e Drogarias.',
+      phones: 'Mostrando telefones de emergência gratuitos do SAMU 192 e Bombeiros 193.',
+    };
+    speakText(catLabels[cat] || `Filtrando ${cat}`);
     if (cat !== 'phones') {
       loadPlaces(gpsCoords.lat, gpsCoords.lng, searchQuery, cat);
     }
@@ -265,29 +308,72 @@ export const NearMeView: React.FC = () => {
             )}
           </button>
 
-          {/* GPS Feedback */}
-          {gpsCoords.lat && (
-            <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border-2 border-emerald-400 dark:border-emerald-700 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
-                <div>
-                  <p className="text-xs font-black text-emerald-900 dark:text-emerald-200">
-                    Localização deste aparelho ativa (GPS)
-                  </p>
-                  <p className="text-[11px] text-emerald-800 dark:text-emerald-300">
-                    Precisão: ±{Math.round(gpsCoords.accuracy || 0)}m • Apenas para esta consulta
-                  </p>
+          {/* GPS Feedback & Location Indicator */}
+          {gpsCoords.lat || locationName ? (
+            <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-2xl border-2 border-emerald-400 dark:border-emerald-700 space-y-2 shadow-xs">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+                  <div>
+                    <p className="text-xs sm:text-sm font-black text-emerald-900 dark:text-emerald-200">
+                      Sua Localização Atual: {locationName || 'Brasil (Identificada)'}
+                    </p>
+                    <p className="text-[11px] text-emerald-800 dark:text-emerald-300">
+                      {gpsCoords.lat
+                        ? `GPS Ativo • Precisão ±${Math.round(gpsCoords.accuracy || 0)}m • Locais ordenados por distância real`
+                        : 'Cidade selecionada • Locais e distâncias calculados'}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    speakText('Atualizando localização via GPS.');
+                    executeGeolocationFetch(false);
+                  }}
+                  className="text-xs font-bold text-sky-700 dark:text-sky-300 underline shrink-0 px-2 py-1 cursor-pointer"
+                  aria-label="Atualizar localização via GPS"
+                >
+                  Atualizar GPS
+                </button>
+              </div>
+
+              {/* Botão de correção rápida de cidade caso o provedor de internet aponte para Curitiba */}
+              <div className="pt-2 border-t border-emerald-200/80 dark:border-emerald-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-[11px]">
+                <span className="text-emerald-900 dark:text-emerald-300 font-medium">
+                  Mora em <strong>Rolândia</strong> ou outra cidade?
+                </span>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => handleSelectQuickCity('Rolândia, PR')}
+                    className="btn-contrast-solid bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 shadow-xs cursor-pointer"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Usar Rolândia, PR</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById('input-city-address');
+                      input?.focus();
+                      speakText('Digite o nome da sua cidade no campo abaixo.');
+                    }}
+                    className="text-slate-700 dark:text-slate-300 hover:underline font-bold px-2 py-1"
+                  >
+                    Digitar outra cidade
+                  </button>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={executeGeolocationFetch}
-                className="text-xs font-bold text-sky-700 dark:text-sky-300 underline shrink-0 px-2 py-1"
-              >
-                Atualizar
-              </button>
             </div>
-          )}
+          ) : isLocating ? (
+            <div className="p-3 bg-sky-50 dark:bg-sky-950/60 rounded-2xl border-2 border-sky-300 dark:border-sky-700 flex items-center gap-2.5">
+              <div className="w-4 h-4 border-2 border-sky-600 border-t-transparent rounded-full animate-spin shrink-0" />
+              <p className="text-xs font-bold text-sky-900 dark:text-sky-200">
+                Obtendo localização deste aparelho no Brasil via GPS...
+              </p>
+            </div>
+          ) : null}
 
           {isGpsInaccurate && (
             <div className="p-3 bg-amber-50 dark:bg-amber-950/60 rounded-2xl border-2 border-amber-400 dark:border-amber-700 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2">
@@ -317,13 +403,13 @@ export const NearMeView: React.FC = () => {
           </div>
 
           {/* Search Box */}
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             <form onSubmit={handleSearchSubmit} className="space-y-1.5">
               <label
                 htmlFor="input-city-address"
                 className="block text-xs font-black text-slate-800 dark:text-slate-200"
               >
-                Ou digite sua cidade, bairro ou endereço:
+                Ou digite sua cidade, bairro ou endereço no Brasil:
               </label>
               <div className="flex gap-2">
                 <input
@@ -331,13 +417,13 @@ export const NearMeView: React.FC = () => {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Ex: Londrina Centro, Curitiba Batel ou São Paulo Sé"
+                  placeholder="Ex: São Paulo, Rio de Janeiro, Brasília, Salvador, etc."
                   className="flex-1 p-3 rounded-2xl border-2 border-slate-300 dark:border-slate-700 text-sm font-bold bg-white dark:bg-slate-950 text-slate-900 dark:text-white"
                 />
                 <button
                   type="submit"
                   disabled={isSearchingText || !searchQuery.trim()}
-                  className="btn-contrast-solid bg-slate-900 dark:bg-white text-white dark:text-slate-900 disabled:opacity-50 px-4 py-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow"
+                  className="btn-contrast-solid bg-slate-900 dark:bg-white text-white dark:text-slate-900 disabled:opacity-50 px-4 py-3 rounded-2xl font-black text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow cursor-pointer"
                   aria-label="Buscar locais pelo endereço digitado"
                 >
                   {isSearchingText ? (
@@ -351,6 +437,29 @@ export const NearMeView: React.FC = () => {
                 </button>
               </div>
             </form>
+
+            {/* Quick Cities across Brazil */}
+            <div>
+              <span className="block text-[11px] font-black text-slate-700 dark:text-slate-300 mb-1.5">
+                Capitais e Cidades no Brasil (Toque para ver postos e UPAs):
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {popularBrazilianCities.map((city) => (
+                  <button
+                    key={city}
+                    type="button"
+                    onClick={() => handleSelectQuickCity(city)}
+                    className={`text-[11px] font-black px-2.5 py-1 rounded-xl border transition cursor-pointer ${
+                      searchQuery === city
+                        ? 'btn-contrast-solid bg-sky-600 text-white border-sky-600 shadow-xs'
+                        : 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                    }`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -520,11 +629,28 @@ export const NearMeView: React.FC = () => {
                           {place.name}
                         </h4>
                       </div>
-                      {place.formattedDistance && (
-                        <span className="shrink-0 text-xs font-mono font-black text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950 px-2.5 py-1 rounded-xl border border-sky-200 dark:border-sky-800">
-                          {place.formattedDistance}
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {place.formattedDistance && (
+                          <span className="text-xs font-mono font-black text-sky-800 dark:text-sky-300 bg-sky-50 dark:bg-sky-950 px-2.5 py-1 rounded-xl border border-sky-200 dark:border-sky-800">
+                            {place.formattedDistance}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            let text = `${place.name}. Categoria: ${place.categoryLabel}. Endereço: ${place.address}. `;
+                            if (place.formattedDistance) text += `Distância estimada: ${place.formattedDistance}. `;
+                            if (place.openingHours) text += `Horário de funcionamento: ${place.openingHours}. `;
+                            if (place.phone) text += `Telefone: ${place.phone}. `;
+                            speakText(text);
+                          }}
+                          className="p-1.5 text-sky-600 hover:text-sky-800 dark:text-sky-400 rounded-xl"
+                          title="Ouvir informações da unidade"
+                          aria-label={`Ouvir informações de ${place.name}`}
+                        >
+                          <Volume2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed bg-slate-50 dark:bg-slate-800/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-1">
@@ -574,13 +700,14 @@ export const NearMeView: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => {
+                            speakText(`Abrindo confirmação para telefonar para ${place.name}`);
                             setCallConfirmation({
                               isOpen: true,
                               placeName: place.name,
                               phoneNumber: place.phone!,
                             });
                           }}
-                          className="btn-contrast-solid bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black py-3 px-4 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow"
+                          className="btn-contrast-solid bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-black py-3 px-4 rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow cursor-pointer"
                           aria-label={`Ligar para ${place.name}`}
                         >
                           <PhoneCall className="w-4 h-4" />
@@ -598,8 +725,11 @@ export const NearMeView: React.FC = () => {
                       )}
                       <button
                         type="button"
-                        onClick={() => openRouteUrl(place)}
-                        className="bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/60 dark:hover:bg-sky-900/60 text-sky-900 dark:text-sky-200 font-black py-3 px-4 rounded-2xl text-xs sm:text-sm border-2 border-sky-300 dark:border-sky-700 flex items-center justify-center gap-2 transition"
+                        onClick={() => {
+                          speakText(`Abrindo mapa com trajeto até ${place.name}`);
+                          openRouteUrl(place);
+                        }}
+                        className="bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/60 dark:hover:bg-sky-900/60 text-sky-900 dark:text-sky-200 font-black py-3 px-4 rounded-2xl text-xs sm:text-sm border-2 border-sky-300 dark:border-sky-700 flex items-center justify-center gap-2 transition cursor-pointer"
                         aria-label={`Ver rota no mapa para ${place.name}`}
                       >
                         <ExternalLink className="w-4 h-4 text-sky-600" />
@@ -695,7 +825,7 @@ export const NearMeView: React.FC = () => {
             <div className="space-y-2 pt-2">
               <button
                 type="button"
-                onClick={executeGeolocationFetch}
+                onClick={() => executeGeolocationFetch(false)}
                 className="btn-contrast-solid w-full bg-sky-600 hover:bg-sky-700 text-white font-black py-3.5 px-4 rounded-2xl text-sm shadow-md flex items-center justify-center gap-2"
               >
                 <Navigation className="w-5 h-5" />

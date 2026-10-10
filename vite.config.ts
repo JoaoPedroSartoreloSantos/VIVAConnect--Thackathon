@@ -5,6 +5,8 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Base './' allows serving from any sub-path (like GitHub Pages https://<user>.github.io/<repo>/)
+    base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

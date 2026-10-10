@@ -16,6 +16,9 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
+export let lastSpokenTime = 0;
+export let lastSpokenText = '';
+
 export function isSpeechSupported(): boolean {
   return typeof window !== 'undefined' && 'speechSynthesis' in window;
 }
@@ -36,6 +39,52 @@ export function stopSpeaking(): void {
   }
 }
 
+export function explainFunctionClick(name: string, description: string): void {
+  speakText(`${name}: ${description}`);
+}
+
+export function setupGlobalFunctionSpeech(): () => void {
+  if (typeof window === 'undefined') return () => {};
+
+  const handleClick = (e: MouseEvent) => {
+    const target = (e.target as HTMLElement | null)?.closest<HTMLElement>(
+      'button, a, [role="button"], [data-speech-desc]'
+    );
+    if (!target) return;
+
+    // Skip if an explicit onClick already spoke in the last 700ms
+    if (Date.now() - lastSpokenTime < 700) {
+      return;
+    }
+
+    const customDesc = target.getAttribute('data-speech-desc');
+    if (customDesc) {
+      speakText(customDesc);
+      return;
+    }
+
+    const ariaLabel = target.getAttribute('aria-label');
+    if (ariaLabel && ariaLabel.trim().length > 3) {
+      speakText(ariaLabel);
+      return;
+    }
+
+    const title = target.getAttribute('title');
+    if (title && title.trim().length > 3) {
+      speakText(title);
+      return;
+    }
+
+    const text = target.innerText?.trim();
+    if (text && text.length > 2 && text.length < 120) {
+      speakText(`Opção: ${text}`);
+    }
+  };
+
+  window.addEventListener('click', handleClick, { capture: true });
+  return () => window.removeEventListener('click', handleClick, { capture: true });
+}
+
 export function speakText(
   text: string,
   onStart?: () => void,
@@ -53,6 +102,9 @@ export function speakText(
     if (onEnd) onEnd();
     return;
   }
+
+  lastSpokenTime = Date.now();
+  lastSpokenText = text;
 
   const cleanText = text
     .replace(/[#*_`]/g, '')

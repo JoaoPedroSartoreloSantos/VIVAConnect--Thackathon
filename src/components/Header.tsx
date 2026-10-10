@@ -42,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
     const updated = { ...settings, fontScale: nextScale };
     onUpdateSettings(updated);
     document.documentElement.style.setProperty('--font-scale', `${nextScale}`);
+    speakText(delta > 0 ? 'Tamanho da letra aumentado.' : 'Tamanho da letra diminuído.');
   };
 
   const handleThemeChange = (theme: 'normal' | 'contrast' | 'rest') => {
@@ -69,8 +70,11 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-2xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
         {/* Brand Logo on the left */}
         <button
-          onClick={onNavigateHome}
-          className="flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-xl p-1 -ml-1 transition hover:opacity-90 shrink-0"
+          onClick={() => {
+            speakText('Voltando para a tela inicial do VIVA+.');
+            onNavigateHome();
+          }}
+          className="flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-sky-500 rounded-xl p-1 -ml-1 transition hover:opacity-90 shrink-0 cursor-pointer"
           aria-label="VIVA+ Início - Toque para voltar à tela inicial"
         >
           <VivaLogo variant="header" size="md" />
@@ -178,8 +182,11 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* About Button */}
           <button
-            onClick={onOpenAbout}
-            className="p-1.5 text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+            onClick={() => {
+              speakText('Abrindo informações sobre o projeto VIVA+, acessibilidade e fontes oficiais de dados seguros.');
+              onOpenAbout();
+            }}
+            className="p-1.5 text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0 cursor-pointer"
             aria-label="Informações sobre o aplicativo VIVA+"
             title="Sobre o aplicativo"
           >
